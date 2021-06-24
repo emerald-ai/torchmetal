@@ -11,15 +11,15 @@ from torchmetal.datasets.pascal5i import Pascal5i
 from torchmetal.datasets import helpers
 
 __all__ = [
-    'TCGA',
-    'Omniglot',
-    'MiniImagenet',
-    'TieredImagenet',
-    'CIFARFS',
-    'FC100',
-    'CUB',
-    'DoubleMNIST',
-    'TripleMNIST',
-    'Pascal5i',
-    'helpers'
+    "TCGA",
+    "Omniglot",
+    "MiniImagenet",
+    "TieredImagenet",
+    "CIFARFS",
+    "FC100",
+    "CUB",
+    "DoubleMNIST",
+    "TripleMNIST",
+    "Pascal5i",
+    "helpers",
 ]

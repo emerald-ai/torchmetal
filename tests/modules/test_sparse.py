@@ -26,8 +26,9 @@ def test_metaembedding():
     outputs_torchmetal = meta_model(inputs, params=None)
     outputs_nn = model(inputs)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )
 
 
 def test_metaembedding_params():
@@ -35,19 +36,20 @@ def test_metaembedding_params():
     model = nn.Embedding(5, 3, padding_idx=0)
 
     params = OrderedDict()
-    params['weight'] = torch.randn(5, 3)
-    model.weight.data.copy_(params['weight'])
+    params["weight"] = torch.randn(5, 3)
+    model.weight.data.copy_(params["weight"])
 
     inputs = torch.randint(5, size=(2, 7))
 
     outputs_torchmetal = meta_model(inputs, params=params)
     outputs_nn = model(inputs)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )
 
 
-@pytest.mark.parametrize('mode', ['sum', 'mean', 'max'])
+@pytest.mark.parametrize("mode", ["sum", "mean", "max"])
 def test_metaembeddingbag(mode):
     meta_model = MetaEmbeddingBag(5, 3, mode=mode)
     model = nn.EmbeddingBag(5, 3, mode=mode)
@@ -65,23 +67,25 @@ def test_metaembeddingbag(mode):
     outputs_torchmetal = meta_model(inputs, params=None)
     outputs_nn = model(inputs)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )
 
 
-@pytest.mark.parametrize('mode', ['sum', 'mean', 'max'])
+@pytest.mark.parametrize("mode", ["sum", "mean", "max"])
 def test_metaembeddingbag_params(mode):
     meta_model = MetaEmbeddingBag(5, 3, mode=mode)
     model = nn.EmbeddingBag(5, 3, mode=mode)
 
     params = OrderedDict()
-    params['weight'] = torch.randn(5, 3)
-    model.weight.data.copy_(params['weight'])
+    params["weight"] = torch.randn(5, 3)
+    model.weight.data.copy_(params["weight"])
 
     inputs = torch.randint(5, size=(2, 7))
 
     outputs_torchmetal = meta_model(inputs, params=params)
     outputs_nn = model(inputs)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )

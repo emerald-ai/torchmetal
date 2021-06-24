@@ -5,7 +5,7 @@ from collections import OrderedDict, defaultdict
 from torchmetal.utils.data.task import Task, ConcatTask, SubsetTask
 from torchmetal.transforms.utils import apply_wrapper
 
-__all__ = ['Splitter', 'ClassSplitter', 'WeightedClassSplitter']
+__all__ = ["Splitter", "ClassSplitter", "WeightedClassSplitter"]
 
 
 class Splitter(object):
@@ -23,54 +23,70 @@ class Splitter(object):
         elif isinstance(task, Task):
             indices = self.get_indices_task(task)
         else:
-            raise ValueError('The task must be of type `ConcatTask` or `Task`, '
-                'Got type `{0}`.'.format(type(task)))
+            raise ValueError(
+                "The task must be of type `ConcatTask` or `Task`, "
+                "Got type `{0}`.".format(type(task))
+            )
         return indices
 
     def get_indices_task(self, task):
-        raise NotImplementedError('Method `get_indices_task` must be '
-            'implemented in classes inherited from `Splitter`.')
+        raise NotImplementedError(
+            "Method `get_indices_task` must be "
+            "implemented in classes inherited from `Splitter`."
+        )
 
     def get_indices_concattask(self, task):
-        raise NotImplementedError('Method `get_indices_concattask` must be '
-            'implemented in classes inherited from `Splitter`.')
+        raise NotImplementedError(
+            "Method `get_indices_concattask` must be "
+            "implemented in classes inherited from `Splitter`."
+        )
 
     def _get_class_indices(self, task):
         class_indices = defaultdict(list)
-        if task.num_classes is None: # Regression task
-            class_indices['regression'] = range(len(task))
+        if task.num_classes is None:  # Regression task
+            class_indices["regression"] = range(len(task))
         else:
             for index in range(len(task)):
                 sample = task[index]
                 if (not isinstance(sample, tuple)) or (len(sample) < 2):
-                    raise ValueError('In order to split the dataset in train/'
-                        'test splits, `Splitter` must access the targets. Each '
-                        'sample from a task must be a tuple with at least 2 '
-                        'elements, with the last one being the target.')
+                    raise ValueError(
+                        "In order to split the dataset in train/"
+                        "test splits, `Splitter` must access the targets. Each "
+                        "sample from a task must be a tuple with at least 2 "
+                        "elements, with the last one being the target."
+                    )
                 class_indices[sample[-1]].append(index)
 
             if len(class_indices) != task.num_classes:
-                raise ValueError('The number of classes detected in `Splitter` '
-                    '({0}) is different from the property `num_classes` ({1}) '
-                    'in task `{2}`.'.format(len(class_indices),
-                    task.num_classes, task))
+                raise ValueError(
+                    "The number of classes detected in `Splitter` "
+                    "({0}) is different from the property `num_classes` ({1}) "
+                    "in task `{2}`.".format(len(class_indices), task.num_classes, task)
+                )
 
         return class_indices
 
     def __call__(self, task):
         indices = self.get_indices(task)
-        return OrderedDict([(split, SubsetTask(task, indices[split]))
-            for split in self.splits])
+        return OrderedDict(
+            [(split, SubsetTask(task, indices[split])) for split in self.splits]
+        )
 
     def __len__(self):
         return len(self.splits)
 
 
 class ClassSplitter_(Splitter):
-    def __init__(self, shuffle=True, num_samples_per_class=None,
-                 num_train_per_class=None, num_test_per_class=None,
-                 num_support_per_class=None, num_query_per_class=None,
-                 random_state_seed=0):
+    def __init__(
+        self,
+        shuffle=True,
+        num_samples_per_class=None,
+        num_train_per_class=None,
+        num_test_per_class=None,
+        num_support_per_class=None,
+        num_query_per_class=None,
+        random_state_seed=0,
+    ):
         """
         Transforms a dataset into train/test splits for few-shot learning tasks,
         based on a fixed number of samples per class for each split. This is a
@@ -128,13 +144,13 @@ class ClassSplitter_(Splitter):
         if num_samples_per_class is None:
             num_samples_per_class = OrderedDict()
             if num_train_per_class is not None:
-                num_samples_per_class['train'] = num_train_per_class
+                num_samples_per_class["train"] = num_train_per_class
             elif num_support_per_class is not None:
-                num_samples_per_class['support'] = num_support_per_class
+                num_samples_per_class["support"] = num_support_per_class
             if num_test_per_class is not None:
-                num_samples_per_class['test'] = num_test_per_class
+                num_samples_per_class["test"] = num_test_per_class
             elif num_query_per_class is not None:
-                num_samples_per_class['query'] = num_query_per_class
+                num_samples_per_class["query"] = num_query_per_class
         assert len(num_samples_per_class) > 0
 
         self._min_samples_per_class = sum(num_samples_per_class.values())
@@ -147,10 +163,13 @@ class ClassSplitter_(Splitter):
         for i, (name, class_indices) in enumerate(all_class_indices.items()):
             num_samples = len(class_indices)
             if num_samples < self._min_samples_per_class:
-                raise ValueError('The number of samples for class `{0}` ({1}) '
-                    'is smaller than the minimum number of samples per class '
-                    'required by `ClassSplitter` ({2}).'.format(name,
-                    num_samples, self._min_samples_per_class))
+                raise ValueError(
+                    "The number of samples for class `{0}` ({1}) "
+                    "is smaller than the minimum number of samples per class "
+                    "required by `ClassSplitter` ({2}).".format(
+                        name, num_samples, self._min_samples_per_class
+                    )
+                )
 
             if self.shuffle:
                 seed = (hash(task) + i + self.random_state_seed) % (2 ** 32)
@@ -160,7 +179,7 @@ class ClassSplitter_(Splitter):
 
             ptr = 0
             for split, num_split in self.splits.items():
-                split_indices = dataset_indices[ptr:ptr + num_split]
+                split_indices = dataset_indices[ptr : ptr + num_split]
                 if self.shuffle:
                     self.np_random.shuffle(split_indices)
                 indices[split].extend([class_indices[idx] for idx in split_indices])
@@ -175,10 +194,13 @@ class ClassSplitter_(Splitter):
         for dataset in task.datasets:
             num_samples = len(dataset)
             if num_samples < self._min_samples_per_class:
-                raise ValueError('The number of samples for one class ({0}) '
-                    'is smaller than the minimum number of samples per class '
-                    'required by `ClassSplitter` ({1}).'.format(num_samples,
-                    self._min_samples_per_class))
+                raise ValueError(
+                    "The number of samples for one class ({0}) "
+                    "is smaller than the minimum number of samples per class "
+                    "required by `ClassSplitter` ({1}).".format(
+                        num_samples, self._min_samples_per_class
+                    )
+                )
 
             if self.shuffle:
                 seed = (hash(task) + hash(dataset) + self.random_state_seed) % (2 ** 32)
@@ -188,7 +210,7 @@ class ClassSplitter_(Splitter):
 
             ptr = 0
             for split, num_split in self.splits.items():
-                split_indices = dataset_indices[ptr:ptr + num_split]
+                split_indices = dataset_indices[ptr : ptr + num_split]
                 if self.shuffle:
                     self.np_random.shuffle(split_indices)
                 indices[split].extend(split_indices + cum_size)
@@ -199,10 +221,19 @@ class ClassSplitter_(Splitter):
 
 
 class WeightedClassSplitter_(Splitter):
-    def __init__(self, shuffle=True, min_num_samples=1, max_num_samples=None,
-                 weights=None, train_weights=None, test_weights=None,
-                 support_weights=None, query_weights=None,
-                 force_equal_per_class=False, random_state_seed=0):
+    def __init__(
+        self,
+        shuffle=True,
+        min_num_samples=1,
+        max_num_samples=None,
+        weights=None,
+        train_weights=None,
+        test_weights=None,
+        support_weights=None,
+        query_weights=None,
+        force_equal_per_class=False,
+        random_state_seed=0,
+    ):
         """
         Transforms a dataset into train/test splits for few-shot learning tasks.
         The number of samples per class is proportional to the number of samples
@@ -258,39 +289,45 @@ class WeightedClassSplitter_(Splitter):
         if weights is None:
             weights = OrderedDict()
             if train_weights is not None:
-                weights['train'] = train_weights
+                weights["train"] = train_weights
             elif support_weights is not None:
-                weights['support'] = support_weights
+                weights["support"] = support_weights
             if test_weights is not None:
-                weights['test'] = test_weights
+                weights["test"] = test_weights
             elif query_weights is not None:
-                weights['query'] = query_weights
+                weights["query"] = query_weights
         assert len(weights) > 0
-        assert sum(weights.values()) <= 1.
+        assert sum(weights.values()) <= 1.0
 
         if (min_num_samples is None) or isinstance(min_num_samples, int):
             if min_num_samples is None:
                 min_num_samples = 0
-            self.min_num_samples = OrderedDict([(split, min_num_samples)
-                for split in weights])
+            self.min_num_samples = OrderedDict(
+                [(split, min_num_samples) for split in weights]
+            )
         elif isinstance(min_num_samples, dict):
             self.min_num_samples = OrderedDict(min_num_samples)
         else:
-            raise NotImplementedError('Argument `min_num_samples` in '
-                '`WeightedClassSplitter` must be of type `dict` or `int`. Got '
-                'type `{0}`.'.format(type(min_num_samples)))
+            raise NotImplementedError(
+                "Argument `min_num_samples` in "
+                "`WeightedClassSplitter` must be of type `dict` or `int`. Got "
+                "type `{0}`.".format(type(min_num_samples))
+            )
 
         if max_num_samples is None:
             self.max_num_samples = None
         elif isinstance(max_num_samples, int):
-            self.max_num_samples = OrderedDict([(split, max_num_samples)
-                for split in weights])
+            self.max_num_samples = OrderedDict(
+                [(split, max_num_samples) for split in weights]
+            )
         elif isinstance(max_num_samples, dict):
             self.max_num_samples = OrderedDict(max_num_samples)
         else:
-            raise NotImplementedError('Argument `max_num_samples` in '
-                '`WeightedClassSplitter` must be of type `dict` or `int`. Got '
-                'type `{0}`.'.format(type(min_num_samples)))
+            raise NotImplementedError(
+                "Argument `max_num_samples` in "
+                "`WeightedClassSplitter` must be of type `dict` or `int`. Got "
+                "type `{0}`.".format(type(min_num_samples))
+            )
 
         self._min_samples_per_class = sum(self.min_num_samples.values())
         super(WeightedClassSplitter_, self).__init__(weights, random_state_seed)
@@ -299,17 +336,22 @@ class WeightedClassSplitter_(Splitter):
         all_class_indices = self._get_class_indices(task)
         indices = OrderedDict([(split, []) for split in self.splits])
 
-        min_samples = min([len(class_indices) for class_indices
-            in all_class_indices.values()])
+        min_samples = min(
+            [len(class_indices) for class_indices in all_class_indices.values()]
+        )
         if min_samples < self._min_samples_per_class:
-            raise ValueError('The smallest number of samples in a class ({0}) '
-                    'is smaller than the minimum number of samples per class '
-                    'required by `WeightedClassSplitter` ({1}).'.format(
-                    min_samples, self._min_samples_per_class))
+            raise ValueError(
+                "The smallest number of samples in a class ({0}) "
+                "is smaller than the minimum number of samples per class "
+                "required by `WeightedClassSplitter` ({1}).".format(
+                    min_samples, self._min_samples_per_class
+                )
+            )
 
         for i, class_indices in enumerate(all_class_indices.values()):
-            num_samples = (min_samples if self.force_equal_per_class
-                else len(class_indices))
+            num_samples = (
+                min_samples if self.force_equal_per_class else len(class_indices)
+            )
             if self.shuffle:
                 seed = (hash(task) + i + self.random_state_seed) % (2 ** 32)
                 dataset_indices = np.random.RandomState(seed).permutation(num_samples)
@@ -321,7 +363,7 @@ class WeightedClassSplitter_(Splitter):
                 num_split = max(self.min_num_samples[split], int(weight * num_samples))
                 if self.max_num_samples is not None:
                     num_split = min(self.max_num_samples[split], num_split)
-                split_indices = dataset_indices[ptr:ptr + num_split]
+                split_indices = dataset_indices[ptr : ptr + num_split]
                 if self.shuffle:
                     self.np_random.shuffle(split_indices)
                 indices[split].extend([class_indices[idx] for idx in split_indices])
@@ -335,14 +377,16 @@ class WeightedClassSplitter_(Splitter):
 
         min_samples = min([len(dataset) for dataset in task.datasets])
         if min_samples < self._min_samples_per_class:
-            raise ValueError('The smallest number of samples in a class ({0}) '
-                    'is smaller than the minimum number of samples per class '
-                    'required by `WeightedClassSplitter` ({1}).'.format(
-                    min_samples, self._min_samples_per_class))
+            raise ValueError(
+                "The smallest number of samples in a class ({0}) "
+                "is smaller than the minimum number of samples per class "
+                "required by `WeightedClassSplitter` ({1}).".format(
+                    min_samples, self._min_samples_per_class
+                )
+            )
 
         for dataset in task.datasets:
-            num_samples = (min_samples if self.force_equal_per_class
-                else len(dataset))
+            num_samples = min_samples if self.force_equal_per_class else len(dataset)
             if self.shuffle:
                 seed = (hash(task) + hash(dataset) + self.random_state_seed) % (2 ** 32)
                 dataset_indices = np.random.RandomState(seed).permutation(num_samples)
@@ -352,7 +396,7 @@ class WeightedClassSplitter_(Splitter):
             ptr = 0
             for split, weight in self.splits.items():
                 num_split = max(self.min_num_samples, int(weight * num_samples))
-                split_indices = dataset_indices[ptr:ptr + num_split]
+                split_indices = dataset_indices[ptr : ptr + num_split]
                 if self.shuffle:
                     self.np_random.shuffle(split_indices)
                 indices[split].extend(split_indices + cum_size)
@@ -363,6 +407,7 @@ class WeightedClassSplitter_(Splitter):
 
 def ClassSplitter(task=None, *args, **kwargs):
     return apply_wrapper(ClassSplitter_(*args, **kwargs), task)
+
 
 def WeightedClassSplitter(task=None, *args, **kwargs):
     return apply_wrapper(WeightedClassSplitter_(*args, **kwargs), task)

@@ -9,7 +9,7 @@ from torchmetal.modules import MetaModule
 from torchmetal.modules.linear import MetaLinear, MetaBilinear
 
 
-@pytest.mark.parametrize('bias', [True, False])
+@pytest.mark.parametrize("bias", [True, False])
 def test_metalinear(bias):
     meta_model = MetaLinear(2, 3, bias=bias)
     model = nn.Linear(2, 3, bias=bias)
@@ -32,33 +32,35 @@ def test_metalinear(bias):
     outputs_torchmetal = meta_model(inputs, params=None)
     outputs_nn = model(inputs)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )
 
 
-@pytest.mark.parametrize('bias', [True, False])
+@pytest.mark.parametrize("bias", [True, False])
 def test_metalinear_params(bias):
     meta_model = MetaLinear(2, 3, bias=bias)
     model = nn.Linear(2, 3, bias=bias)
 
     params = OrderedDict()
-    params['weight'] = torch.randn(3, 2)
-    model.weight.data.copy_(params['weight'])
+    params["weight"] = torch.randn(3, 2)
+    model.weight.data.copy_(params["weight"])
 
     if bias:
-        params['bias'] = torch.randn(3)
-        model.bias.data.copy_(params['bias'])
+        params["bias"] = torch.randn(3)
+        model.bias.data.copy_(params["bias"])
 
     inputs = torch.randn(5, 2)
 
     outputs_torchmetal = meta_model(inputs, params=params)
     outputs_nn = model(inputs)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )
 
 
-@pytest.mark.parametrize('bias', [True, False])
+@pytest.mark.parametrize("bias", [True, False])
 def test_metabilinear(bias):
     meta_model = MetaBilinear(2, 3, 5, bias=bias)
     model = nn.Bilinear(2, 3, 5, bias=bias)
@@ -82,22 +84,23 @@ def test_metabilinear(bias):
     outputs_torchmetal = meta_model(inputs1, inputs2, params=None)
     outputs_nn = model(inputs1, inputs2)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )
 
 
-@pytest.mark.parametrize('bias', [True, False])
+@pytest.mark.parametrize("bias", [True, False])
 def test_metabilinear_params(bias):
     meta_model = MetaBilinear(2, 3, 5, bias=bias)
     model = nn.Bilinear(2, 3, 5, bias=bias)
 
     params = OrderedDict()
-    params['weight'] = torch.randn(5, 2, 3)
-    model.weight.data.copy_(params['weight'])
+    params["weight"] = torch.randn(5, 2, 3)
+    model.weight.data.copy_(params["weight"])
 
     if bias:
-        params['bias'] = torch.randn(5)
-        model.bias.data.copy_(params['bias'])
+        params["bias"] = torch.randn(5)
+        model.bias.data.copy_(params["bias"])
 
     inputs1 = torch.randn(7, 2)
     inputs2 = torch.randn(7, 3)
@@ -105,5 +108,6 @@ def test_metabilinear_params(bias):
     outputs_torchmetal = meta_model(inputs1, inputs2, params=params)
     outputs_nn = model(inputs1, inputs2)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )

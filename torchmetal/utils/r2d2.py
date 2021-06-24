@@ -5,19 +5,22 @@ import warnings
 from collections import namedtuple
 from math import sqrt
 
-__all__ = ['ridge_regression']
+__all__ = ["ridge_regression"]
 
 
-_RR_weight_bias = namedtuple('_RR_weight_bias', 'weight bias')
+_RR_weight_bias = namedtuple("_RR_weight_bias", "weight bias")
 
-def ridge_regression(embeddings,
-                     targets,
-                     reg_lambda,
-                     num_classes=None,
-                     use_woodbury=None,
-                     scale=True,
-                     bias=True):
-    r"""Closed-form solution of a linear function of the embeddings, found 
+
+def ridge_regression(
+    embeddings,
+    targets,
+    reg_lambda,
+    num_classes=None,
+    use_woodbury=None,
+    scale=True,
+    bias=True,
+):
+    r"""Closed-form solution of a linear function of the embeddings, found
     using ridge regression.
 
         W^{*} = argmin_{W} ||XW - Y||^{2} + \lambda ||W||^{2}
@@ -74,25 +77,28 @@ def ridge_regression(embeddings,
     is_regression_task = targets.dtype.is_floating_point
     if num_classes is None:
         if is_regression_task and (targets.ndim != 2):
-            raise ValueError('The `targets` tensor has invalid shape `{0}`. '
-                             'This tensor must have shape `(num_examples, '
-                             'output_size)`.'.format(targets.shape))
+            raise ValueError(
+                "The `targets` tensor has invalid shape `{0}`. "
+                "This tensor must have shape `(num_examples, "
+                "output_size)`.".format(targets.shape)
+            )
 
         elif not is_regression_task:
-            warnings.warn('The number of classes was not given as an input to '
-                          '`ridge_regression`. Using the number of classes '
-                          'found in `targets`. If you know the number of '
-                          'classes (i.e. N in `N-way` classification), then it '
-                          'is recommended to provide it to `ridge_regression`.',
-                          stacklevel=2)
+            warnings.warn(
+                "The number of classes was not given as an input to "
+                "`ridge_regression`. Using the number of classes "
+                "found in `targets`. If you know the number of "
+                "classes (i.e. N in `N-way` classification), then it "
+                "is recommended to provide it to `ridge_regression`.",
+                stacklevel=2,
+            )
             num_classes = -1
 
     if not is_regression_task:
-        targets = (F.one_hot(targets, num_classes=num_classes)
-                    .to(dtype=embeddings.dtype))
+        targets = F.one_hot(targets, num_classes=num_classes).to(dtype=embeddings.dtype)
 
     if use_woodbury is None:
-        use_woodbury = (num_samples <= embedding_size + bias)
+        use_woodbury = num_samples <= embedding_size + bias
 
     if bias:
         ones = embeddings.new_ones((num_samples, 1))
@@ -103,16 +109,14 @@ def ridge_regression(embeddings,
         targets = targets / sqrt(num_samples)
 
     if use_woodbury:
-        eye = torch.eye(num_samples,
-                        dtype=embeddings.dtype,
-                        device=embeddings.device)
+        eye = torch.eye(num_samples, dtype=embeddings.dtype, device=embeddings.device)
         A = torch.matmul(embeddings, embeddings.t()) + reg_lambda * eye
         solution, _ = torch.solve(targets, A)
         weight_bias = torch.matmul(embeddings.t(), solution)
     else:
-        eye = torch.eye(embedding_size + bias,
-                        dtype=embeddings.dtype,
-                        device=embeddings.device)
+        eye = torch.eye(
+            embedding_size + bias, dtype=embeddings.dtype, device=embeddings.device
+        )
         A = torch.matmul(embeddings.t(), embeddings) + reg_lambda * eye
         b = torch.matmul(embeddings.t(), targets)
         weight_bias, _ = torch.solve(b, A)

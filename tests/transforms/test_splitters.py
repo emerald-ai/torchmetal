@@ -8,21 +8,32 @@ from torchmetal.transforms.splitters import ClassSplitter
 from torchmetal.toy import Sinusoid
 from torchmetal.utils.data import Task
 
+
 def test_seed_class_splitter():
-    dataset_transform = ClassSplitter(shuffle=True,
-        num_train_per_class=5, num_test_per_class=5)
-    dataset = Sinusoid(10, num_tasks=1000, noise_std=0.1,
-        dataset_transform=dataset_transform)
+    dataset_transform = ClassSplitter(
+        shuffle=True, num_train_per_class=5, num_test_per_class=5
+    )
+    dataset = Sinusoid(
+        10, num_tasks=1000, noise_std=0.1, dataset_transform=dataset_transform
+    )
     dataset.seed(1)
 
-    expected_train_inputs = np.array([-2.03870077,  0.09898378,  3.75388738,  1.08565437, -1.56211897])
-    expected_train_targets = np.array([-0.1031986 , -1.61885041,  0.91773121, -0.00309463, -1.37650356])
+    expected_train_inputs = np.array(
+        [-2.03870077, 0.09898378, 3.75388738, 1.08565437, -1.56211897]
+    )
+    expected_train_targets = np.array(
+        [-0.1031986, -1.61885041, 0.91773121, -0.00309463, -1.37650356]
+    )
 
-    expected_test_inputs = np.array([ 4.62078213, -2.48340416,  0.32922559,  0.76977846, -3.15504396])
-    expected_test_targets = np.array([-0.9346262 ,  0.73113509, -1.52508997, -0.4698061 ,  1.86656819])
+    expected_test_inputs = np.array(
+        [4.62078213, -2.48340416, 0.32922559, 0.76977846, -3.15504396]
+    )
+    expected_test_targets = np.array(
+        [-0.9346262, 0.73113509, -1.52508997, -0.4698061, 1.86656819]
+    )
 
     task = dataset[0]
-    train_dataset, test_dataset = task['train'], task['test']
+    train_dataset, test_dataset = task["train"], task["test"]
 
     assert len(train_dataset) == 5
     assert len(test_dataset) == 5
@@ -34,6 +45,7 @@ def test_seed_class_splitter():
     for i, (test_input, test_target) in enumerate(test_dataset):
         assert np.isclose(test_input, expected_test_inputs[i])
         assert np.isclose(test_target, expected_test_targets[i])
+
 
 def test_class_splitter_for_fold_overlaps():
     class DemoTask(Task):
@@ -73,4 +85,6 @@ def test_class_splitter_for_fold_overlaps():
     samples_in_all_test_splits = OrderedSet().union(*all_test_samples)
 
     # no overlap between train and test splits at multiple splits
-    assert len(samples_in_all_test_splits.intersection(samples_in_all_train_splits)) == 0
+    assert (
+        len(samples_in_all_test_splits.intersection(samples_in_all_train_splits)) == 0
+    )

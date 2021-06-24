@@ -74,28 +74,63 @@ class CIFARFS(CombinationMetaDataset):
     .. [2] Krizhevsky A. (2009). Learning Multiple Layers of Features from Tiny
            Images. (https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf)
     """
-    def __init__(self, root, num_classes_per_task=None, meta_train=False,
-                 meta_val=False, meta_test=False, meta_split=None,
-                 transform=None, target_transform=None, dataset_transform=None,
-                 class_augmentations=None, download=False):
-        dataset = CIFARFSClassDataset(root, meta_train=meta_train,
-            meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
-            transform=transform, class_augmentations=class_augmentations,
-            download=download)
-        super(CIFARFS, self).__init__(dataset, num_classes_per_task,
-            target_transform=target_transform, dataset_transform=dataset_transform)
+
+    def __init__(
+        self,
+        root,
+        num_classes_per_task=None,
+        meta_train=False,
+        meta_val=False,
+        meta_test=False,
+        meta_split=None,
+        transform=None,
+        target_transform=None,
+        dataset_transform=None,
+        class_augmentations=None,
+        download=False,
+    ):
+        dataset = CIFARFSClassDataset(
+            root,
+            meta_train=meta_train,
+            meta_val=meta_val,
+            meta_test=meta_test,
+            meta_split=meta_split,
+            transform=transform,
+            class_augmentations=class_augmentations,
+            download=download,
+        )
+        super(CIFARFS, self).__init__(
+            dataset,
+            num_classes_per_task,
+            target_transform=target_transform,
+            dataset_transform=dataset_transform,
+        )
 
 
 class CIFARFSClassDataset(CIFAR100ClassDataset):
-    subfolder = 'cifar-fs'
+    subfolder = "cifar-fs"
 
-    def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
-                 meta_split=None, transform=None, class_augmentations=None,
-                 download=False):
-        super(CIFARFSClassDataset, self).__init__(root, meta_train=meta_train,
-            meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
-            transform=transform, class_augmentations=class_augmentations,
-            download=download)
+    def __init__(
+        self,
+        root,
+        meta_train=False,
+        meta_val=False,
+        meta_test=False,
+        meta_split=None,
+        transform=None,
+        class_augmentations=None,
+        download=False,
+    ):
+        super(CIFARFSClassDataset, self).__init__(
+            root,
+            meta_train=meta_train,
+            meta_val=meta_val,
+            meta_test=meta_test,
+            meta_split=meta_split,
+            transform=transform,
+            class_augmentations=class_augmentations,
+            download=download,
+        )
 
     def download(self):
         if self._check_integrity():
@@ -106,13 +141,15 @@ class CIFARFSClassDataset(CIFAR100ClassDataset):
         if not os.path.exists(subfolder):
             os.makedirs(subfolder)
 
-        for split in ['train', 'val', 'test']:
-            split_filename_labels = os.path.join(subfolder,
-                self.filename_labels.format(split))
+        for split in ["train", "val", "test"]:
+            split_filename_labels = os.path.join(
+                subfolder, self.filename_labels.format(split)
+            )
             if os.path.isfile(split_filename_labels):
                 continue
 
-            data = get_asset(self.folder, self.subfolder,
-                '{0}.json'.format(split), dtype='json')
-            with open(split_filename_labels, 'w') as f:
+            data = get_asset(
+                self.folder, self.subfolder, "{0}.json".format(split), dtype="json"
+            )
+            with open(split_filename_labels, "w") as f:
                 json.dump(data, f)

@@ -5,6 +5,7 @@ from collections import OrderedDict
 from torch.nn.modules.batchnorm import _BatchNorm
 from torchmetal.modules.module import MetaModule
 
+
 class _MetaBatchNorm(_BatchNorm, MetaModule):
     def forward(self, input, params=None):
         self._check_input_dim(input)
@@ -27,34 +28,42 @@ class _MetaBatchNorm(_BatchNorm, MetaModule):
                 else:  # use exponential moving average
                     exponential_average_factor = self.momentum
 
-        weight = params.get('weight', None)
-        bias = params.get('bias', None)
+        weight = params.get("weight", None)
+        bias = params.get("bias", None)
 
         return F.batch_norm(
-            input, self.running_mean, self.running_var, weight, bias,
+            input,
+            self.running_mean,
+            self.running_var,
+            weight,
+            bias,
             self.training or not self.track_running_stats,
-            exponential_average_factor, self.eps)
+            exponential_average_factor,
+            self.eps,
+        )
+
 
 class MetaBatchNorm1d(_MetaBatchNorm):
     __doc__ = nn.BatchNorm1d.__doc__
 
     def _check_input_dim(self, input):
         if input.dim() != 2 and input.dim() != 3:
-            raise ValueError('expected 2D or 3D input (got {}D input)'
-                             .format(input.dim()))
+            raise ValueError(
+                "expected 2D or 3D input (got {}D input)".format(input.dim())
+            )
+
 
 class MetaBatchNorm2d(_MetaBatchNorm):
     __doc__ = nn.BatchNorm2d.__doc__
 
     def _check_input_dim(self, input):
         if input.dim() != 4:
-            raise ValueError('expected 4D input (got {}D input)'
-                             .format(input.dim()))
+            raise ValueError("expected 4D input (got {}D input)".format(input.dim()))
+
 
 class MetaBatchNorm3d(_MetaBatchNorm):
     __doc__ = nn.BatchNorm3d.__doc__
 
     def _check_input_dim(self, input):
         if input.dim() != 5:
-            raise ValueError('expected 5D input (got {}D input)'
-                             .format(input.dim()))
+            raise ValueError("expected 5D input (got {}D input)".format(input.dim()))

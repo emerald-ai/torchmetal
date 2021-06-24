@@ -5,15 +5,17 @@ from torch.utils.data.sampler import SequentialSampler, RandomSampler
 
 from torchmetal.utils.data.dataset import CombinationMetaDataset
 
-__all__ = ['CombinationSequentialSampler', 'CombinationRandomSampler']
+__all__ = ["CombinationSequentialSampler", "CombinationRandomSampler"]
 
 
 class CombinationSequentialSampler(SequentialSampler):
     def __init__(self, data_source):
         if not isinstance(data_source, CombinationMetaDataset):
-            raise TypeError('Expected `data_source` to be an instance of '
-                            '`CombinationMetaDataset`, but found '
-                            '{0}'.format(type(data_source)))
+            raise TypeError(
+                "Expected `data_source` to be an instance of "
+                "`CombinationMetaDataset`, but found "
+                "{0}".format(type(data_source))
+            )
         super(CombinationSequentialSampler, self).__init__(data_source)
 
     def __iter__(self):
@@ -25,17 +27,20 @@ class CombinationSequentialSampler(SequentialSampler):
 class CombinationRandomSampler(RandomSampler):
     def __init__(self, data_source):
         if not isinstance(data_source, CombinationMetaDataset):
-            raise TypeError('Expected `data_source` to be an instance of '
-                            '`CombinationMetaDataset`, but found '
-                            '{0}'.format(type(data_source)))
+            raise TypeError(
+                "Expected `data_source` to be an instance of "
+                "`CombinationMetaDataset`, but found "
+                "{0}".format(type(data_source))
+            )
         # Temporarily disable the warning if the length of the length of the
         # dataset exceeds the machine precision. This avoids getting this
         # warning shown with MetaDataLoader, even though MetaDataLoader itself
         # does not use the length of the dataset.
         with warnings.catch_warnings():
-            warnings.simplefilter('ignore')
-            super(CombinationRandomSampler, self).__init__(data_source,
-                                                           replacement=True)
+            warnings.simplefilter("ignore")
+            super(CombinationRandomSampler, self).__init__(
+                data_source, replacement=True
+            )
 
     def __iter__(self):
         num_classes = len(self.data_source.dataset)

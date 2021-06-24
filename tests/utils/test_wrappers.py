@@ -7,23 +7,20 @@ from torch.utils.data import Dataset, DataLoader
 from torchmetal.datasets import helpers
 from torchmetal.utils.data import NonEpisodicWrapper
 
-is_local = (os.getenv('TORCHMETAL_DATA_FOLDER') is not None)
+is_local = os.getenv("TORCHMETAL_DATA_FOLDER") is not None
 
 
-@pytest.mark.skipif(not is_local, reason='Requires datasets downloaded locally')
-@pytest.mark.parametrize('name', helpers.__all__)
-@pytest.mark.parametrize('split', ['train', 'val', 'test'])
+@pytest.mark.skipif(not is_local, reason="Requires datasets downloaded locally")
+@pytest.mark.parametrize("name", helpers.__all__)
+@pytest.mark.parametrize("split", ["train", "val", "test"])
 def test_datasets_helpers_wrapper(name, split):
     function = getattr(helpers, name)
-    folder = os.getenv('TORCHMETAL_DATA_FOLDER')
-    download = bool(os.getenv('TORCHMETAL_DOWNLOAD', False))
+    folder = os.getenv("TORCHMETAL_DATA_FOLDER")
+    download = bool(os.getenv("TORCHMETAL_DOWNLOAD", False))
 
-    dataset = function(folder,
-                       ways=5,
-                       shots=1,
-                       test_shots=15,
-                       meta_split=split,
-                       download=download)
+    dataset = function(
+        folder, ways=5, shots=1, test_shots=15, meta_split=split, download=download
+    )
 
     wrapped_dataset = NonEpisodicWrapper(dataset)
 

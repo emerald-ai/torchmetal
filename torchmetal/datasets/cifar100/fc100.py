@@ -75,28 +75,63 @@ class FC100(CombinationMetaDataset):
     .. [2] Krizhevsky A. (2009). Learning Multiple Layers of Features from Tiny
            Images. (https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf)
     """
-    def __init__(self, root, num_classes_per_task=None, meta_train=False,
-                 meta_val=False, meta_test=False, meta_split=None,
-                 transform=None, target_transform=None, dataset_transform=None,
-                 class_augmentations=None, download=False):
-        dataset = FC100ClassDataset(root, meta_train=meta_train,
-            meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
-            transform=transform, class_augmentations=class_augmentations,
-            download=download)
-        super(FC100, self).__init__(dataset, num_classes_per_task,
-            target_transform=target_transform, dataset_transform=dataset_transform)
+
+    def __init__(
+        self,
+        root,
+        num_classes_per_task=None,
+        meta_train=False,
+        meta_val=False,
+        meta_test=False,
+        meta_split=None,
+        transform=None,
+        target_transform=None,
+        dataset_transform=None,
+        class_augmentations=None,
+        download=False,
+    ):
+        dataset = FC100ClassDataset(
+            root,
+            meta_train=meta_train,
+            meta_val=meta_val,
+            meta_test=meta_test,
+            meta_split=meta_split,
+            transform=transform,
+            class_augmentations=class_augmentations,
+            download=download,
+        )
+        super(FC100, self).__init__(
+            dataset,
+            num_classes_per_task,
+            target_transform=target_transform,
+            dataset_transform=dataset_transform,
+        )
 
 
 class FC100ClassDataset(CIFAR100ClassDataset):
-    subfolder = 'fc100'
+    subfolder = "fc100"
 
-    def __init__(self, root, meta_train=False, meta_val=False, meta_test=False,
-                 meta_split=None, transform=None, class_augmentations=None,
-                 download=False):
-        super(FC100ClassDataset, self).__init__(root, meta_train=meta_train,
-            meta_val=meta_val, meta_test=meta_test, meta_split=meta_split,
-            transform=transform, class_augmentations=class_augmentations,
-            download=download)
+    def __init__(
+        self,
+        root,
+        meta_train=False,
+        meta_val=False,
+        meta_test=False,
+        meta_split=None,
+        transform=None,
+        class_augmentations=None,
+        download=False,
+    ):
+        super(FC100ClassDataset, self).__init__(
+            root,
+            meta_train=meta_train,
+            meta_val=meta_val,
+            meta_test=meta_test,
+            meta_split=meta_split,
+            transform=transform,
+            class_augmentations=class_augmentations,
+            download=download,
+        )
 
     def download(self):
         if self._check_integrity():
@@ -108,18 +143,23 @@ class FC100ClassDataset(CIFAR100ClassDataset):
             os.makedirs(subfolder)
 
         filename_fine_names = os.path.join(self.root, self.filename_fine_names)
-        with open(filename_fine_names, 'r') as f:
+        with open(filename_fine_names, "r") as f:
             fine_names = json.load(f)
 
-        for split in ['train', 'val', 'test']:
-            split_filename_labels = os.path.join(subfolder,
-                self.filename_labels.format(split))
+        for split in ["train", "val", "test"]:
+            split_filename_labels = os.path.join(
+                subfolder, self.filename_labels.format(split)
+            )
             if os.path.isfile(split_filename_labels):
                 continue
 
-            data = get_asset(self.folder, self.subfolder,
-                '{0}.json'.format(split), dtype='json')
-            with open(split_filename_labels, 'w') as f:
-                labels = [[coarse_name, fine_name] for coarse_name in data
-                    for fine_name in fine_names[coarse_name]]
+            data = get_asset(
+                self.folder, self.subfolder, "{0}.json".format(split), dtype="json"
+            )
+            with open(split_filename_labels, "w") as f:
+                labels = [
+                    [coarse_name, fine_name]
+                    for coarse_name in data
+                    for fine_name in fine_names[coarse_name]
+                ]
                 json.dump(labels, f)

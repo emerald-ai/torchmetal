@@ -1,5 +1,6 @@
 import torchvision.transforms.functional as F
 
+
 class Rotation(object):
     def __init__(self, angle, resample=False, expand=False, center=None):
         super(Rotation, self).__init__()
@@ -11,28 +12,38 @@ class Rotation(object):
             self.angle = angle
             if angle % 360 == 0:
                 import warnings
-                warnings.warn('Applying a rotation of {0} degrees (`{1}`) as a '
-                    'class augmentation on a dataset is equivalent to the original '
-                    'dataset.'.format(angle, self), UserWarning, stacklevel=2)
+
+                warnings.warn(
+                    "Applying a rotation of {0} degrees (`{1}`) as a "
+                    "class augmentation on a dataset is equivalent to the original "
+                    "dataset.".format(angle, self),
+                    UserWarning,
+                    stacklevel=2,
+                )
 
         self.resample = resample
         self.expand = expand
         self.center = center
 
     def __iter__(self):
-        return iter(Rotation(angle, resample=self.resample, expand=self.expand,
-            center=self.center) for angle in self._angles)
+        return iter(
+            Rotation(
+                angle, resample=self.resample, expand=self.expand, center=self.center
+            )
+            for angle in self._angles
+        )
 
     def __call__(self, image):
         if self.angle is None:
-            raise ValueError('The value of the angle is unspecified.')
+            raise ValueError("The value of the angle is unspecified.")
         # QKFIX: Explicitly compute the pixel fill value due to an
         # incompatibility between Torchvision 0.5 and Pillow 7.0.0
         # https://github.com/pytorch/vision/issues/1759#issuecomment-583826810
         # Will be fixed in Torchvision 0.6
         fill = tuple([0] * len(image.getbands()))
-        return F.rotate(image, self.angle % 360, self.resample,
-                        self.expand, self.center, fill=fill)
+        return F.rotate(
+            image, self.angle % 360, self.resample, self.expand, self.center, fill=fill
+        )
 
     def __hash__(self):
         return hash(repr(self))
@@ -44,15 +55,16 @@ class Rotation(object):
 
     def __repr__(self):
         if self.angle is None:
-            return 'Rotation({0})'.format(', '.join(map(str, self._angles)))
+            return "Rotation({0})".format(", ".join(map(str, self._angles)))
         else:
-            return 'Rotation({0})'.format(self.angle % 360)
+            return "Rotation({0})".format(self.angle % 360)
 
     def __str__(self):
         if self.angle is None:
-            return 'Rotation({0})'.format(', '.join(map(str, self._angles)))
+            return "Rotation({0})".format(", ".join(map(str, self._angles)))
         else:
-            return 'Rotation({0})'.format(self.angle)
+            return "Rotation({0})".format(self.angle)
+
 
 class HorizontalFlip(object):
     def __iter__(self):
@@ -62,7 +74,8 @@ class HorizontalFlip(object):
         return F.hflip(image)
 
     def __repr__(self):
-        return 'HorizontalFlip()'
+        return "HorizontalFlip()"
+
 
 class VerticalFlip(object):
     def __iter__(self):
@@ -72,4 +85,4 @@ class VerticalFlip(object):
         return F.vflip(image)
 
     def __repr__(self):
-        return 'VerticalFlip()'
+        return "VerticalFlip()"

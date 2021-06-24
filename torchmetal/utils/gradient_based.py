@@ -4,11 +4,9 @@ from collections import OrderedDict
 from torchmetal.modules import MetaModule
 
 
-def gradient_update_parameters(model,
-                               loss,
-                               params=None,
-                               step_size=0.5,
-                               first_order=False):
+def gradient_update_parameters(
+    model, loss, params=None, step_size=0.5, first_order=False
+):
     """Update of the meta-parameters with one step of gradient descent on the
     loss function.
 
@@ -40,15 +38,15 @@ def gradient_update_parameters(model,
         gradient update wrt. the inner-loss.
     """
     if not isinstance(model, MetaModule):
-        raise ValueError('The model must be an instance of `torchmetal.modules.'
-                         'MetaModule`, got `{0}`'.format(type(model)))
+        raise ValueError(
+            "The model must be an instance of `torchmetal.modules."
+            "MetaModule`, got `{0}`".format(type(model))
+        )
 
     if params is None:
         params = OrderedDict(model.meta_named_parameters())
 
-    grads = torch.autograd.grad(loss,
-                                params.values(),
-                                create_graph=not first_order)
+    grads = torch.autograd.grad(loss, params.values(), create_graph=not first_order)
 
     updated_params = OrderedDict()
 

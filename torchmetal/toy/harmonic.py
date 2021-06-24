@@ -48,11 +48,21 @@ class Harmonic(MetaDataset):
            Krueger D. (2018). Uncertainty in Multitask Transfer Learning. In
            Advances in Neural Information Processing Systems (https://arxiv.org/abs/1806.07528)
     """
-    def __init__(self, num_samples_per_task, num_tasks=5000,
-                 noise_std=None, transform=None, target_transform=None,
-                 dataset_transform=None):
-        super(Harmonic, self).__init__(meta_split='train',
-            target_transform=target_transform, dataset_transform=dataset_transform)
+
+    def __init__(
+        self,
+        num_samples_per_task,
+        num_tasks=5000,
+        noise_std=None,
+        transform=None,
+        target_transform=None,
+        dataset_transform=None,
+    ):
+        super(Harmonic, self).__init__(
+            meta_split="train",
+            target_transform=target_transform,
+            dataset_transform=dataset_transform,
+        )
         self.num_samples_per_task = num_samples_per_task
         self.num_tasks = num_tasks
         self.noise_std = noise_std
@@ -70,22 +80,25 @@ class Harmonic(MetaDataset):
     @property
     def domains(self):
         if self._domains is None:
-            self._domains = self.np_random.uniform(self._domain_range[0],
-                self._domain_range[1], size=self.num_tasks)
+            self._domains = self.np_random.uniform(
+                self._domain_range[0], self._domain_range[1], size=self.num_tasks
+            )
         return self._domains
 
     @property
     def frequencies(self):
         if self._frequencies is None:
-            self._frequencies = self.np_random.uniform(self._frequency_range[0],
-                self._frequency_range[1], size=self.num_tasks)
+            self._frequencies = self.np_random.uniform(
+                self._frequency_range[0], self._frequency_range[1], size=self.num_tasks
+            )
         return self._frequencies
 
     @property
     def phases(self):
         if self._phases is None:
-            self._phases = self.np_random.uniform(self._phase_range[0],
-                self._phase_range[1], size=(self.num_tasks, 2))
+            self._phases = self.np_random.uniform(
+                self._phase_range[0], self._phase_range[1], size=(self.num_tasks, 2)
+            )
         return self._phases
 
     @property
@@ -103,9 +116,18 @@ class Harmonic(MetaDataset):
         phases = self.phases[index]
         amplitudes = self.amplitudes[index]
 
-        task = HarmonicTask(index, domain, frequency, phases, amplitudes,
-            self.noise_std, self.num_samples_per_task, self.transform,
-            self.target_transform, np_random=self.np_random)
+        task = HarmonicTask(
+            index,
+            domain,
+            frequency,
+            phases,
+            amplitudes,
+            self.noise_std,
+            self.num_samples_per_task,
+            self.transform,
+            self.target_transform,
+            np_random=self.np_random,
+        )
 
         if self.dataset_transform is not None:
             task = self.dataset_transform(task)
@@ -114,10 +136,20 @@ class Harmonic(MetaDataset):
 
 
 class HarmonicTask(Task):
-    def __init__(self, index, domain, frequency, phases, amplitudes,
-                 noise_std, num_samples, transform=None,
-                 target_transform=None, np_random=None):
-        super(HarmonicTask, self).__init__(index, None) # Regression task
+    def __init__(
+        self,
+        index,
+        domain,
+        frequency,
+        phases,
+        amplitudes,
+        noise_std,
+        num_samples,
+        transform=None,
+        target_transform=None,
+        np_random=None,
+    ):
+        super(HarmonicTask, self).__init__(index, None)  # Regression task
         self.domain = domain
         self.frequency = frequency
         self.phases = phases
@@ -135,9 +167,10 @@ class HarmonicTask(Task):
         b_1, b_2 = self.phases
 
         self._inputs = self.domain + np_random.randn(num_samples, 1)
-        self._targets = (a_1 * np.sin(frequency * self._inputs + b_1)
-            + a_2 * np.sin(2 * frequency * self._inputs + b_2))
-        if (noise_std is not None) and (noise_std > 0.):
+        self._targets = a_1 * np.sin(frequency * self._inputs + b_1) + a_2 * np.sin(
+            2 * frequency * self._inputs + b_2
+        )
+        if (noise_std is not None) and (noise_std > 0.0):
             self._targets += noise_std * np_random.randn(num_samples, 1)
 
     def __len__(self):

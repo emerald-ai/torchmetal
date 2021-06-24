@@ -3,10 +3,14 @@ import pytest
 import numpy as np
 import torch
 
-from torchmetal.utils.prototype import get_num_samples, get_prototypes, prototypical_loss
+from torchmetal.utils.prototype import (
+    get_num_samples,
+    get_prototypes,
+    prototypical_loss,
+)
 
 
-@pytest.mark.parametrize('dtype', [None, torch.float32])
+@pytest.mark.parametrize("dtype", [None, torch.float32])
 def test_get_num_samples(dtype):
     # Numpy
     num_classes = 3

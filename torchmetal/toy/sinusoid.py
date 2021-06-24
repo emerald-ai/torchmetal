@@ -45,11 +45,21 @@ class Sinusoid(MetaDataset):
            for Fast Adaptation of Deep Networks. International Conference on
            Machine Learning (ICML) (https://arxiv.org/abs/1703.03400)
     """
-    def __init__(self, num_samples_per_task, num_tasks=1000000,
-                 noise_std=None, transform=None, target_transform=None,
-                 dataset_transform=None):
-        super(Sinusoid, self).__init__(meta_split='train',
-            target_transform=target_transform, dataset_transform=dataset_transform)
+
+    def __init__(
+        self,
+        num_samples_per_task,
+        num_tasks=1000000,
+        noise_std=None,
+        transform=None,
+        target_transform=None,
+        dataset_transform=None,
+    ):
+        super(Sinusoid, self).__init__(
+            meta_split="train",
+            target_transform=target_transform,
+            dataset_transform=dataset_transform,
+        )
         self.num_samples_per_task = num_samples_per_task
         self.num_tasks = num_tasks
         self.noise_std = noise_std
@@ -65,15 +75,17 @@ class Sinusoid(MetaDataset):
     @property
     def amplitudes(self):
         if self._amplitudes is None:
-            self._amplitudes = self.np_random.uniform(self._amplitude_range[0],
-                self._amplitude_range[1], size=self.num_tasks)
+            self._amplitudes = self.np_random.uniform(
+                self._amplitude_range[0], self._amplitude_range[1], size=self.num_tasks
+            )
         return self._amplitudes
 
     @property
     def phases(self):
         if self._phases is None:
-            self._phases = self.np_random.uniform(self._phase_range[0],
-                self._phase_range[1], size=self.num_tasks)
+            self._phases = self.np_random.uniform(
+                self._phase_range[0], self._phase_range[1], size=self.num_tasks
+            )
         return self._phases
 
     def __len__(self):
@@ -81,9 +93,17 @@ class Sinusoid(MetaDataset):
 
     def __getitem__(self, index):
         amplitude, phase = self.amplitudes[index], self.phases[index]
-        task = SinusoidTask(index, amplitude, phase, self._input_range,
-            self.noise_std, self.num_samples_per_task, self.transform,
-            self.target_transform, np_random=self.np_random)
+        task = SinusoidTask(
+            index,
+            amplitude,
+            phase,
+            self._input_range,
+            self.noise_std,
+            self.num_samples_per_task,
+            self.transform,
+            self.target_transform,
+            np_random=self.np_random,
+        )
 
         if self.dataset_transform is not None:
             task = self.dataset_transform(task)
@@ -92,10 +112,19 @@ class Sinusoid(MetaDataset):
 
 
 class SinusoidTask(Task):
-    def __init__(self, index, amplitude, phase, input_range, noise_std,
-                 num_samples, transform=None, target_transform=None,
-                 np_random=None):
-        super(SinusoidTask, self).__init__(index, None) # Regression task
+    def __init__(
+        self,
+        index,
+        amplitude,
+        phase,
+        input_range,
+        noise_std,
+        num_samples,
+        transform=None,
+        target_transform=None,
+        np_random=None,
+    ):
+        super(SinusoidTask, self).__init__(index, None)  # Regression task
         self.amplitude = amplitude
         self.phase = phase
         self.input_range = input_range
@@ -108,10 +137,11 @@ class SinusoidTask(Task):
         if np_random is None:
             np_random = np.random.RandomState(None)
 
-        self._inputs = np_random.uniform(input_range[0], input_range[1],
-            size=(num_samples, 1))
+        self._inputs = np_random.uniform(
+            input_range[0], input_range[1], size=(num_samples, 1)
+        )
         self._targets = amplitude * np.sin(self._inputs - phase)
-        if (noise_std is not None) and (noise_std > 0.):
+        if (noise_std is not None) and (noise_std > 0.0):
             self._targets += noise_std * np_random.randn(num_samples, 1)
 
     def __len__(self):

@@ -28,6 +28,7 @@ class Categorical(TargetTransform):
     >>> task[0]
     (<PIL.Image.Image image mode=L size=105x105 at 0x11ED3F668>, 2)
     """
+
     def __init__(self, num_classes=None):
         super(Categorical, self).__init__()
         self.num_classes = num_classes
@@ -48,9 +49,11 @@ class Categorical(TargetTransform):
                 default_factory = lambda: self.labels[len(self._classes)]
             self._classes.default_factory = default_factory
         if (self.num_classes is not None) and (len(self._classes) > self.num_classes):
-            raise ValueError('The number of individual labels ({0}) is greater '
-                'than the number of classes defined by `num_classes` '
-                '({1}).'.format(len(self._classes), self.num_classes))
+            raise ValueError(
+                "The number of individual labels ({0}) is greater "
+                "than the number of classes defined by `num_classes` "
+                "({1}).".format(len(self._classes), self.num_classes)
+            )
         return self._classes
 
     @property
@@ -64,7 +67,7 @@ class Categorical(TargetTransform):
         return self.classes[target]
 
     def __repr__(self):
-        return '{0}({1})'.format(self.__class__.__name__, self.num_classes or '')
+        return "{0}({1})".format(self.__class__.__name__, self.num_classes or "")
 
 
 class FixedCategory(object):
@@ -75,4 +78,4 @@ class FixedCategory(object):
         return (index, self.transform)
 
     def __repr__(self):
-        return ('{0}({1})'.format(self.__class__.__name__, self.transform))
+        return "{0}({1})".format(self.__class__.__name__, self.transform)

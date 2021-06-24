@@ -12,7 +12,7 @@ from torchmetal.utils.data.task import ConcatTask
 from torchmetal.transforms import FixedCategory, Categorical, DefaultTargetTransform
 from torchmetal.transforms.utils import wrap_transform
 
-__all__ = ['ClassDataset', 'MetaDataset', 'CombinationMetaDataset']
+__all__ = ["ClassDataset", "MetaDataset", "CombinationMetaDataset"]
 
 
 class ClassDataset(object):
@@ -44,23 +44,36 @@ class ClassDataset(object):
         A list of functions that augment the dataset with new classes. These classes
         are transformations of existing classes. E.g. `transforms.HorizontalFlip()`.
     """
-    def __init__(self, meta_train=False, meta_val=False, meta_test=False,
-                 meta_split=None, class_augmentations=None):
+
+    def __init__(
+        self,
+        meta_train=False,
+        meta_val=False,
+        meta_test=False,
+        meta_split=None,
+        class_augmentations=None,
+    ):
         if meta_train + meta_val + meta_test == 0:
             if meta_split is None:
-                raise ValueError('The meta-split is undefined. Use either the '
-                    'argument `meta_train=True` (or `meta_val`/`meta_test`), or '
-                    'the argument `meta_split="train"` (or "val"/"test").')
-            elif meta_split not in ['train', 'val', 'test']:
-                raise ValueError('Unknown meta-split name `{0}`. The meta-split '
-                    'must be in [`train`, `val`, `test`].'.format(meta_split))
-            meta_train = (meta_split == 'train')
-            meta_val = (meta_split == 'val')
-            meta_test = (meta_split == 'test')
+                raise ValueError(
+                    "The meta-split is undefined. Use either the "
+                    "argument `meta_train=True` (or `meta_val`/`meta_test`), or "
+                    'the argument `meta_split="train"` (or "val"/"test").'
+                )
+            elif meta_split not in ["train", "val", "test"]:
+                raise ValueError(
+                    "Unknown meta-split name `{0}`. The meta-split "
+                    "must be in [`train`, `val`, `test`].".format(meta_split)
+                )
+            meta_train = meta_split == "train"
+            meta_val = meta_split == "val"
+            meta_test = meta_split == "test"
         elif meta_train + meta_val + meta_test > 1:
-            raise ValueError('Multiple arguments among `meta_train`, `meta_val` '
-                'and `meta_test` are set to `True`. Exactly one must be set to '
-                '`True`.')
+            raise ValueError(
+                "Multiple arguments among `meta_train`, `meta_val` "
+                "and `meta_test` are set to `True`. Exactly one must be set to "
+                "`True`."
+            )
         self.meta_train = meta_train
         self.meta_val = meta_val
         self.meta_test = meta_test
@@ -68,17 +81,22 @@ class ClassDataset(object):
 
         if class_augmentations is not None:
             if not isinstance(class_augmentations, list):
-                raise TypeError('Unknown type for `class_augmentations`. '
-                    'Expected `list`, got `{0}`.'.format(type(class_augmentations)))
+                raise TypeError(
+                    "Unknown type for `class_augmentations`. "
+                    "Expected `list`, got `{0}`.".format(type(class_augmentations))
+                )
             unique_augmentations = OrderedSet()
             for augmentations in class_augmentations:
                 for transform in augmentations:
                     if transform in unique_augmentations:
-                        warnings.warn('The class augmentation `{0}` already '
-                            'exists in the list of class augmentations (`{1}`). '
-                            'To avoid any duplicate, this transformation is '
-                            'ignored.'.format(transform, repr(transform)),
-                            UserWarning, stacklevel=2)
+                        warnings.warn(
+                            "The class augmentation `{0}` already "
+                            "exists in the list of class augmentations (`{1}`). "
+                            "To avoid any duplicate, this transformation is "
+                            "ignored.".format(transform, repr(transform)),
+                            UserWarning,
+                            stacklevel=2,
+                        )
                     unique_augmentations.add(transform)
             class_augmentations = list(unique_augmentations)
         else:
@@ -107,11 +125,11 @@ class ClassDataset(object):
     def meta_split(self):
         if self._meta_split is None:
             if self.meta_train:
-                self._meta_split = 'train'
+                self._meta_split = "train"
             elif self.meta_val:
-                self._meta_split = 'val'
+                self._meta_split = "val"
             elif self.meta_test:
-                self._meta_split = 'test'
+                self._meta_split = "test"
             else:
                 raise NotImplementedError()
         return self._meta_split
@@ -159,23 +177,37 @@ class MetaDataset(object):
         A function/transform that takes a dataset (ie. a task), and returns a
         transformed version of it. E.g. `transforms.ClassSplitter()`.
     """
-    def __init__(self, meta_train=False, meta_val=False, meta_test=False,
-                 meta_split=None, target_transform=None, dataset_transform=None):
+
+    def __init__(
+        self,
+        meta_train=False,
+        meta_val=False,
+        meta_test=False,
+        meta_split=None,
+        target_transform=None,
+        dataset_transform=None,
+    ):
         if meta_train + meta_val + meta_test == 0:
             if meta_split is None:
-                raise ValueError('The meta-split is undefined. Use either the '
-                    'argument `meta_train=True` (or `meta_val`/`meta_test`), or '
-                    'the argument `meta_split="train"` (or "val"/"test").')
-            elif meta_split not in ['train', 'val', 'test']:
-                raise ValueError('Unknown meta-split name `{0}`. The meta-split '
-                    'must be in [`train`, `val`, `test`].'.format(meta_split))
-            meta_train = (meta_split == 'train')
-            meta_val = (meta_split == 'val')
-            meta_test = (meta_split == 'test')
+                raise ValueError(
+                    "The meta-split is undefined. Use either the "
+                    "argument `meta_train=True` (or `meta_val`/`meta_test`), or "
+                    'the argument `meta_split="train"` (or "val"/"test").'
+                )
+            elif meta_split not in ["train", "val", "test"]:
+                raise ValueError(
+                    "Unknown meta-split name `{0}`. The meta-split "
+                    "must be in [`train`, `val`, `test`].".format(meta_split)
+                )
+            meta_train = meta_split == "train"
+            meta_val = meta_split == "val"
+            meta_test = meta_split == "test"
         elif meta_train + meta_val + meta_test > 1:
-            raise ValueError('Multiple arguments among `meta_train`, `meta_val` '
-                'and `meta_test` are set to `True`. Exactly one must be set to '
-                '`True`.')
+            raise ValueError(
+                "Multiple arguments among `meta_train`, `meta_val` "
+                "and `meta_test` are set to `True`. Exactly one must be set to "
+                "`True`."
+            )
         self.meta_train = meta_train
         self.meta_val = meta_val
         self.meta_test = meta_test
@@ -188,11 +220,11 @@ class MetaDataset(object):
     def meta_split(self):
         if self._meta_split is None:
             if self.meta_train:
-                self._meta_split = 'train'
+                self._meta_split = "train"
             elif self.meta_val:
-                self._meta_split = 'val'
+                self._meta_split = "val"
             elif self.meta_test:
-                self._meta_split = 'test'
+                self._meta_split = "test"
             else:
                 raise NotImplementedError()
         return self._meta_split
@@ -239,11 +271,19 @@ class CombinationMetaDataset(MetaDataset):
         A function/transform that takes a dataset (ie. a task), and returns a
         transformed version of it. E.g. `transforms.ClassSplitter()`.
     """
-    def __init__(self, dataset, num_classes_per_task, target_transform=None,
-                 dataset_transform=None):
+
+    def __init__(
+        self,
+        dataset,
+        num_classes_per_task,
+        target_transform=None,
+        dataset_transform=None,
+    ):
         if not isinstance(num_classes_per_task, int):
-            raise TypeError('Unknown type for `num_classes_per_task`. Expected '
-                '`int`, got `{0}`.'.format(type(num_classes_per_task)))
+            raise TypeError(
+                "Unknown type for `num_classes_per_task`. Expected "
+                "`int`, got `{0}`.".format(type(num_classes_per_task))
+            )
         self.dataset = dataset
         self.num_classes_per_task = num_classes_per_task
         # If no target_transform, then use a default target transform that
@@ -252,10 +292,14 @@ class CombinationMetaDataset(MetaDataset):
         if target_transform is None:
             target_transform = DefaultTargetTransform(dataset.class_augmentations)
 
-        super(CombinationMetaDataset, self).__init__(meta_train=dataset.meta_train,
-            meta_val=dataset.meta_val, meta_test=dataset.meta_test,
-            meta_split=dataset.meta_split, target_transform=target_transform,
-            dataset_transform=dataset_transform)
+        super(CombinationMetaDataset, self).__init__(
+            meta_train=dataset.meta_train,
+            meta_val=dataset.meta_val,
+            meta_test=dataset.meta_test,
+            meta_split=dataset.meta_split,
+            target_transform=target_transform,
+            dataset_transform=dataset_transform,
+        )
 
     def __iter__(self):
         num_classes = len(self.dataset)
@@ -263,25 +307,36 @@ class CombinationMetaDataset(MetaDataset):
             yield self[index]
 
     def sample_task(self):
-        index = self.np_random.choice(len(self.dataset),
-            size=self.num_classes_per_task, replace=False)
+        index = self.np_random.choice(
+            len(self.dataset), size=self.num_classes_per_task, replace=False
+        )
         return self[tuple(index)]
 
     def __getitem__(self, index):
         if isinstance(index, int):
-            raise ValueError('The index of a `CombinationMetaDataset` must be '
-                'a tuple of integers, and not an integer. For example, call '
-                '`dataset[({0})]` to get a task with classes from 0 to {1} '
-                '(got `{2}`).'.format(', '.join([str(idx)
-                for idx in range(self.num_classes_per_task)]),
-                self.num_classes_per_task - 1, index))
+            raise ValueError(
+                "The index of a `CombinationMetaDataset` must be "
+                "a tuple of integers, and not an integer. For example, call "
+                "`dataset[({0})]` to get a task with classes from 0 to {1} "
+                "(got `{2}`).".format(
+                    ", ".join([str(idx) for idx in range(self.num_classes_per_task)]),
+                    self.num_classes_per_task - 1,
+                    index,
+                )
+            )
         assert len(index) == self.num_classes_per_task
         datasets = [self.dataset[i] for i in index]
         # Use deepcopy on `Categorical` target transforms, to avoid any side
         # effect across tasks.
-        task = ConcatTask(datasets, self.num_classes_per_task,
-            target_transform=wrap_transform(self.target_transform,
-            self._copy_categorical, transform_type=Categorical))
+        task = ConcatTask(
+            datasets,
+            self.num_classes_per_task,
+            target_transform=wrap_transform(
+                self.target_transform,
+                self._copy_categorical,
+                transform_type=Categorical,
+            ),
+        )
 
         if self.dataset_transform is not None:
             task = self.dataset_transform(task)
@@ -301,14 +356,19 @@ class CombinationMetaDataset(MetaDataset):
             length *= (num_classes - i + 1) / i
 
         if length > sys.maxsize:
-            warnings.warn('The number of possible tasks in {0} is '
-                'combinatorially large (equal to C({1}, {2})), and exceeds '
-                'machine precision. Setting the length of the dataset to the '
-                'maximum integer value, which undervalues the actual number of '
-                'possible tasks in the dataset. Therefore the value returned by '
-                '`len(dataset)` should not be trusted as being representative '
-                'of the true number of tasks.'.format(self, len(self.dataset),
-                self.num_classes_per_task), UserWarning, stacklevel=2)
+            warnings.warn(
+                "The number of possible tasks in {0} is "
+                "combinatorially large (equal to C({1}, {2})), and exceeds "
+                "machine precision. Setting the length of the dataset to the "
+                "maximum integer value, which undervalues the actual number of "
+                "possible tasks in the dataset. Therefore the value returned by "
+                "`len(dataset)` should not be trusted as being representative "
+                "of the true number of tasks.".format(
+                    self, len(self.dataset), self.num_classes_per_task
+                ),
+                UserWarning,
+                stacklevel=2,
+            )
             length = sys.maxsize
         return int(length)
 
@@ -317,5 +377,5 @@ def _seed_dataset_transform(transform, seed=None):
     if isinstance(transform, Compose):
         for subtransform in transform.transforms:
             _seed_dataset_transform(subtransform, seed=seed)
-    elif hasattr(transform, 'seed'):
+    elif hasattr(transform, "seed"):
         transform.seed(seed=seed)

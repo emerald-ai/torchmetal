@@ -8,8 +8,7 @@ from torchmetal.toy import Sinusoid, Harmonic, SinusoidAndLine
 from torchmetal.toy import helpers
 
 
-@pytest.mark.parametrize('dataset_class',
-    [Sinusoid, Harmonic, SinusoidAndLine])
+@pytest.mark.parametrize("dataset_class", [Sinusoid, Harmonic, SinusoidAndLine])
 def test_toy_meta_dataset(dataset_class):
     dataset = dataset_class(10, num_tasks=1000, noise_std=None)
 
@@ -17,8 +16,7 @@ def test_toy_meta_dataset(dataset_class):
     assert len(dataset) == 1000
 
 
-@pytest.mark.parametrize('dataset_class',
-    [Sinusoid, Harmonic, SinusoidAndLine])
+@pytest.mark.parametrize("dataset_class", [Sinusoid, Harmonic, SinusoidAndLine])
 def test_toy_task(dataset_class):
     dataset = dataset_class(10, num_tasks=1000, noise_std=None)
     task = dataset[0]
@@ -27,8 +25,7 @@ def test_toy_task(dataset_class):
     assert len(task) == 10
 
 
-@pytest.mark.parametrize('dataset_class',
-    [Sinusoid, Harmonic, SinusoidAndLine])
+@pytest.mark.parametrize("dataset_class", [Sinusoid, Harmonic, SinusoidAndLine])
 def test_toy_sample(dataset_class):
     dataset = dataset_class(10, num_tasks=1000, noise_std=None)
     task = dataset[0]
@@ -40,8 +37,9 @@ def test_toy_sample(dataset_class):
     assert target.shape == (1,)
 
 
-@pytest.mark.parametrize('name,dataset_class',
-    [('sinusoid', Sinusoid), ('harmonic', Harmonic)])
+@pytest.mark.parametrize(
+    "name,dataset_class", [("sinusoid", Sinusoid), ("harmonic", Harmonic)]
+)
 def test_toy_helpers(name, dataset_class):
     dataset_fn = getattr(helpers, name)
     dataset = dataset_fn(shots=5, test_shots=15)
@@ -49,10 +47,10 @@ def test_toy_helpers(name, dataset_class):
 
     task = dataset[0]
     assert isinstance(task, OrderedDict)
-    assert 'train' in task
-    assert 'test' in task
+    assert "train" in task
+    assert "test" in task
 
-    train, test = task['train'], task['test']
+    train, test = task["train"], task["test"]
     assert isinstance(train, Task)
     assert isinstance(test, Task)
     assert len(train) == 5

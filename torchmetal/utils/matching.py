@@ -2,10 +2,10 @@ import torch
 import torch.nn.functional as F
 
 __all__ = [
-    'pairwise_cosine_similarity',
-    'matching_log_probas',
-    'matching_probas',
-    'matching_loss'
+    "pairwise_cosine_similarity",
+    "matching_log_probas",
+    "matching_probas",
+    "matching_loss",
 ]
 
 
@@ -136,21 +136,21 @@ def matching_probas(embeddings, targets, test_embeddings, num_classes, eps=1e-8)
            Matching Networks for One Shot Learning. In Advances in Neural
            Information Processing Systems (pp. 3630-3638) (https://arxiv.org/abs/1606.04080)
     """
-    log_probas = matching_log_probas(embeddings,
-                                     targets,
-                                     test_embeddings,
-                                     num_classes,
-                                     eps=eps)
+    log_probas = matching_log_probas(
+        embeddings, targets, test_embeddings, num_classes, eps=eps
+    )
     return log_probas.exp()
 
 
-def matching_loss(train_embeddings,
-                  train_targets,
-                  test_embeddings,
-                  test_targets,
-                  num_classes,
-                  eps=1e-8,
-                  **kwargs):
+def matching_loss(
+    train_embeddings,
+    train_targets,
+    test_embeddings,
+    test_targets,
+    num_classes,
+    eps=1e-8,
+    **kwargs
+):
     """Compute the loss (i.e. negative log-likelihood) for the matching network
     on the test/query samples [1].
 
@@ -194,9 +194,7 @@ def matching_loss(train_embeddings,
            Matching Networks for One Shot Learning. In Advances in Neural
            Information Processing Systems (pp. 3630-3638) (https://arxiv.org/abs/1606.04080)
     """
-    logits = matching_log_probas(train_embeddings,
-                                 train_targets,
-                                 test_embeddings,
-                                 num_classes,
-                                 eps=eps)
+    logits = matching_log_probas(
+        train_embeddings, train_targets, test_embeddings, num_classes, eps=eps
+    )
     return F.nll_loss(logits, test_targets, **kwargs)

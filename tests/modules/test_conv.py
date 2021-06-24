@@ -9,7 +9,7 @@ from torchmetal.modules import MetaModule
 from torchmetal.modules.conv import MetaConv1d, MetaConv2d, MetaConv3d
 
 
-@pytest.mark.parametrize('bias', [True, False])
+@pytest.mark.parametrize("bias", [True, False])
 def test_metaconv1d(bias):
     meta_model = MetaConv1d(2, 3, kernel_size=5, bias=bias)
     model = nn.Conv1d(2, 3, kernel_size=5, bias=bias)
@@ -32,33 +32,35 @@ def test_metaconv1d(bias):
     outputs_torchmetal = meta_model(inputs, params=None)
     outputs_nn = model(inputs)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )
 
 
-@pytest.mark.parametrize('bias', [True, False])
+@pytest.mark.parametrize("bias", [True, False])
 def test_metaconv1d_params(bias):
     meta_model = MetaConv1d(2, 3, kernel_size=5, bias=bias)
     model = nn.Conv1d(2, 3, kernel_size=5, bias=bias)
 
     params = OrderedDict()
-    params['weight'] = torch.randn(3, 2, 5)
-    model.weight.data.copy_(params['weight'])
+    params["weight"] = torch.randn(3, 2, 5)
+    model.weight.data.copy_(params["weight"])
 
     if bias:
-        params['bias'] = torch.randn(3)
-        model.bias.data.copy_(params['bias'])
+        params["bias"] = torch.randn(3)
+        model.bias.data.copy_(params["bias"])
 
     inputs = torch.randn(7, 2, 11)
 
     outputs_torchmetal = meta_model(inputs, params=params)
     outputs_nn = model(inputs)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )
 
 
-@pytest.mark.parametrize('bias', [True, False])
+@pytest.mark.parametrize("bias", [True, False])
 def test_metaconv2d(bias):
     meta_model = MetaConv2d(2, 3, kernel_size=(5, 7), bias=bias)
     model = nn.Conv2d(2, 3, kernel_size=(5, 7), bias=bias)
@@ -81,33 +83,35 @@ def test_metaconv2d(bias):
     outputs_torchmetal = meta_model(inputs, params=None)
     outputs_nn = model(inputs)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )
 
 
-@pytest.mark.parametrize('bias', [True, False])
+@pytest.mark.parametrize("bias", [True, False])
 def test_metaconv2d_params(bias):
     meta_model = MetaConv2d(2, 3, kernel_size=(5, 7), bias=bias)
     model = nn.Conv2d(2, 3, kernel_size=(5, 7), bias=bias)
 
     params = OrderedDict()
-    params['weight'] = torch.randn(3, 2, 5, 7)
-    model.weight.data.copy_(params['weight'])
+    params["weight"] = torch.randn(3, 2, 5, 7)
+    model.weight.data.copy_(params["weight"])
 
     if bias:
-        params['bias'] = torch.randn(3)
-        model.bias.data.copy_(params['bias'])
+        params["bias"] = torch.randn(3)
+        model.bias.data.copy_(params["bias"])
 
     inputs = torch.randn(11, 2, 13, 17)
 
     outputs_torchmetal = meta_model(inputs, params=params)
     outputs_nn = model(inputs)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )
 
 
-@pytest.mark.parametrize('bias', [True, False])
+@pytest.mark.parametrize("bias", [True, False])
 def test_metaconv3d(bias):
     meta_model = MetaConv3d(2, 3, kernel_size=(5, 7, 11), bias=bias)
     model = nn.Conv3d(2, 3, kernel_size=(5, 7, 11), bias=bias)
@@ -130,27 +134,29 @@ def test_metaconv3d(bias):
     outputs_torchmetal = meta_model(inputs, params=None)
     outputs_nn = model(inputs)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )
 
 
-@pytest.mark.parametrize('bias', [True, False])
+@pytest.mark.parametrize("bias", [True, False])
 def test_metaconv3d_params(bias):
     meta_model = MetaConv3d(2, 3, kernel_size=(5, 7, 11), bias=bias)
     model = nn.Conv3d(2, 3, kernel_size=(5, 7, 11), bias=bias)
 
     params = OrderedDict()
-    params['weight'] = torch.randn(3, 2, 5, 7, 11)
-    model.weight.data.copy_(params['weight'])
+    params["weight"] = torch.randn(3, 2, 5, 7, 11)
+    model.weight.data.copy_(params["weight"])
 
     if bias:
-        params['bias'] = torch.randn(3)
-        model.bias.data.copy_(params['bias'])
+        params["bias"] = torch.randn(3)
+        model.bias.data.copy_(params["bias"])
 
     inputs = torch.randn(13, 2, 17, 23, 29)
 
     outputs_torchmetal = meta_model(inputs, params=params)
     outputs_nn = model(inputs)
 
-    np.testing.assert_equal(outputs_torchmetal.detach().numpy(),
-                            outputs_nn.detach().numpy())
+    np.testing.assert_equal(
+        outputs_torchmetal.detach().numpy(), outputs_nn.detach().numpy()
+    )

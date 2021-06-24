@@ -17,13 +17,15 @@ class DataParallel(DataParallel_, MetaModule):
         if not isinstance(self.module, MetaModule):
             return super(DataParallel, self).scatter(inputs, kwargs, device_ids)
 
-        params = kwargs.pop('params', None)
+        params = kwargs.pop("params", None)
         inputs_, kwargs_ = scatter_kwargs(inputs, kwargs, device_ids, dim=self.dim)
         # Add params argument unchanged back in kwargs
-        replicas = self._replicate_params(params, inputs_, device_ids,
-                                          detach=not torch.is_grad_enabled())
-        kwargs_ = tuple(dict(params=replica, **kwarg)
-                        for (kwarg, replica) in zip(kwargs_, replicas))
+        replicas = self._replicate_params(
+            params, inputs_, device_ids, detach=not torch.is_grad_enabled()
+        )
+        kwargs_ = tuple(
+            dict(params=replica, **kwarg) for (kwarg, replica) in zip(kwargs_, replicas)
+        )
         return inputs_, kwargs_
 
     def _replicate_params(self, params, inputs, device_ids, detach=False):
@@ -34,14 +36,15 @@ class DataParallel(DataParallel_, MetaModule):
             # `module` was found. In that case, the original params dictionary
             # is used.
             with warnings.catch_warnings():
-                warnings.simplefilter('ignore')
-                module_params = self.get_subdict(params, key='module')
+                warnings.simplefilter("ignore")
+                module_params = self.get_subdict(params, key="module")
             if module_params is None:
                 module_params = params
 
-        replicas = _broadcast_coalesced_reshape(list(module_params.values()),
-                                                device_ids[:len(inputs)],
-                                                detach)
-        replicas = tuple(OrderedDict(zip(module_params.keys(), replica))
-                         for replica in replicas)
+        replicas = _broadcast_coalesced_reshape(
+            list(module_params.values()), device_ids[: len(inputs)], detach
+        )
+        replicas = tuple(
+            OrderedDict(zip(module_params.keys(), replica)) for replica in replicas
+        )
         return replicas

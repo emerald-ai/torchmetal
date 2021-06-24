@@ -2,7 +2,7 @@ from torch.utils.data import ConcatDataset, Subset
 from torch.utils.data import Dataset as Dataset_
 from torchvision.transforms import Compose
 
-__all__ = ['Dataset', 'Task', 'ConcatTask', 'SubsetTask']
+__all__ = ["Dataset", "Task", "ConcatTask", "SubsetTask"]
 
 
 class Dataset(Dataset_):
@@ -31,10 +31,11 @@ class Task(Dataset):
     num_classes : int
         Number of classes for the classification task.
     """
-    def __init__(self, index, num_classes,
-                 transform=None, target_transform=None):
-        super(Task, self).__init__(index, transform=transform,
-                                   target_transform=target_transform)
+
+    def __init__(self, index, num_classes, transform=None, target_transform=None):
+        super(Task, self).__init__(
+            index, transform=transform, target_transform=target_transform
+        )
         self.num_classes = num_classes
 
 
@@ -51,8 +52,7 @@ class ConcatTask(Task, ConcatDataset):
 
 
 class SubsetTask(Task, Subset):
-    def __init__(self, dataset, indices, num_classes=None,
-                 target_transform=None):
+    def __init__(self, dataset, indices, num_classes=None, target_transform=None):
         if num_classes is None:
             num_classes = dataset.num_classes
         Task.__init__(self, dataset.index, num_classes)
