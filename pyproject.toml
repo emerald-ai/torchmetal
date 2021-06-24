@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "torchmetal"
+version = "0.1.0"
+description = "A library for Meta-Learning and Few-Shot Learning with PyTorch"
+license = "MIT"
+homepage = "https://github.com/sevro/torchmetal"
+repository = "https://github.com/sevro/torchmetal"
+documentation = "https://github.com/sevro/torchmetal"
+readme = "README.md"
+keywords = ["meta-learning", "pytorch", "few-shot", "few-shot", "learning"]
+classifiers = ["Development Status :: 4 - Beta",
+               "Topic :: Scientific/Engineering :: Artificial Intelligence",
+               "Intended Audience :: Science/Research",
+               "Programming Language :: Python :: 3",
+               "Programming Language :: Python :: 3.6",
+               "Programming Language :: Python :: 3.7",
+               "Programming Language :: Python :: 3.8",
+               "License :: OSI Approved :: MIT License"]
+authors = ["Tristan Deleu <tristan.deleu@gmail.com>",
+           "Derek Goddeau <derek.j.goddeau@pm.me>"]
+maintainers = ["Derek Goddeau <derek.j.goddeau@pm.me>"]
+
+[tool.poetry.dependencies]
+python = "^3.6.2"
+academictorrents = {version = "==2.1.*,>=2.1.0", optional = true}
+h5py = "*"
+numpy = ">=1.14.0"
+ordered-set = "*"
+pandas = {version = "==0.24.*,>=0.24.0", optional = true}
+pillow = ">=7.0.0"
+requests = "*"
+six = {version = "==1.11.*,>=1.11.0", optional = true}
+torch = "<1.9.0,>=1.4.0"
+torchvision = "<0.10.0,>=0.5.0"
+tqdm = ">=4.0.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = "^21.6-beta.0"
+isort = "^5.9.1"
+
+[tool.poetry.extras]
+tcga = ["academictorrents", "pandas", "six"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.masonry.api"

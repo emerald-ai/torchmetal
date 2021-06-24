@@ -1,12 +1,14 @@
-# Torchmeta
-[![PyPI](https://img.shields.io/pypi/v/torchmeta)](https://pypi.org/project/torchmeta/) [![Build Status](https://travis-ci.com/tristandeleu/pytorch-meta.svg?branch=master)](https://travis-ci.com/tristandeleu/pytorch-meta) [![Documentation](https://img.shields.io/badge/docs-torchmeta-blue)](https://tristandeleu.github.io/pytorch-meta/)
+# torchmetal
+[![PyPI](https://img.shields.io/pypi/v/torchmetal)](https://pypi.org/project/torchmetal/) <!--[![Build Status](https://travis-ci.com/tristandeleu/pytorch-meta.svg?branch=master)](https://travis-ci.com/tristandeleu/pytorch-meta) [![Documentation](https://img.shields.io/badge/docs-torchmetal-blue)](https://tristandeleu.github.io/pytorch-meta/)-->
 
-A collection of extensions and data-loaders for few-shot learning & meta-learning in [PyTorch](https://pytorch.org/). Torchmeta contains popular meta-learning benchmarks, fully compatible with both [`torchvision`](https://pytorch.org/docs/stable/torchvision/index.html) and PyTorch's [`DataLoader`](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader).
+A library for few-shot learning & meta-learning in [PyTorch][pytorch].
+torchmetal contains popular meta-learning benchmarks, fully compatible with
+both [`torchvision`][torchvision] and PyTorch's [`DataLoader`][pt-dataloader].
 
 #### Features
   - A unified interface for both few-shot classification and regression problems, to allow easy benchmarking on multiple problems and reproducibility.
   - Helper functions for some popular problems, with default arguments from the literature.
-  - An thin extension of PyTorch's [`Module`](https://pytorch.org/docs/stable/nn.html#torch.nn.Module), called `MetaModule`, that simplifies the creation of certain meta-learning models (e.g. gradient based meta-learning methods). See the [MAML example](examples/maml) for an example using `MetaModule`.
+  - An thin extension of PyTorch's [`Module`][pt-module], called `MetaModule`, that simplifies the creation of certain meta-learning models (e.g. gradient based meta-learning methods). See the [MAML example](examples/maml) for an example using `MetaModule`.
 
 #### Datasets available
   - **Few-shot regression** (toy problems):
@@ -26,26 +28,21 @@ A collection of extensions and data-loaders for few-shot learning & meta-learnin
     - Pascal5i 1-way Setup
 
 ## Installation
-You can install Torchmeta either using Python's package manager pip, or from source. To avoid any conflict with your existing Python setup, it is suggested to work in a virtual environment with [`virtualenv`](https://docs.python-guide.org/dev/virtualenvs/). To install `virtualenv`:
+You can install torchmetal either using Python's package manager pip, or from source. To avoid any conflict with your existing Python setup, it is suggested to work in a virtual environment with [`virtualenv`](https://docs.python-guide.org/dev/virtualenvs/). To install `virtualenv`:
 ```bash
 pip install --upgrade virtualenv
 virtualenv venv
 source venv/bin/activate
 ```
 
-#### Requirements
- - Python 3.6 or above
- - PyTorch 1.4 or above
- - Torchvision 0.5 or above
-
 #### Using pip
-This is the recommended way to install Torchmeta:
+This is the recommended way to install torchmetal:
 ```bash
-pip install torchmeta
+pip install torchmetal
 ```
 
 #### From source
-You can also install Torchmeta from source. This is recommended if you want to contribute to Torchmeta.
+You can also install torchmetal from source. This is recommended if you want to contribute to torchmetal.
 ```bash
 git clone https://github.com/tristandeleu/pytorch-meta.git
 cd pytorch-meta
@@ -55,10 +52,10 @@ python setup.py install
 ## Example
 
 #### Minimal example
-This minimal example below shows how to create a dataloader for the 5-shot 5-way Omniglot dataset with Torchmeta. The dataloader loads a batch of randomly generated tasks, and all the samples are concatenated into a single tensor. For more examples, check the [examples](examples/) folder.
+This minimal example below shows how to create a dataloader for the 5-shot 5-way Omniglot dataset with torchmetal. The dataloader loads a batch of randomly generated tasks, and all the samples are concatenated into a single tensor. For more examples, check the [examples](examples/) folder.
 ```python
-from torchmeta.datasets.helpers import omniglot
-from torchmeta.utils.data import BatchMetaDataLoader
+from torchmetal.datasets.helpers import omniglot
+from torchmetal.utils.data import BatchMetaDataLoader
 
 dataset = omniglot("data", ways=5, shots=5, test_shots=15, meta_train=True, download=True)
 dataloader = BatchMetaDataLoader(dataset, batch_size=16, num_workers=4)
@@ -74,12 +71,12 @@ for batch in dataloader:
 ```
 
 #### Advanced example
-Helper functions are only available for some of the datasets available. However, all of them are available through the unified interface provided by Torchmeta. The variable `dataset` defined above is equivalent to the following
+Helper functions are only available for some of the datasets available. However, all of them are available through the unified interface provided by torchmetal. The variable `dataset` defined above is equivalent to the following
 ```python
-from torchmeta.datasets import Omniglot
-from torchmeta.transforms import Categorical, ClassSplitter, Rotation
+from torchmetal.datasets import Omniglot
+from torchmetal.transforms import Categorical, ClassSplitter, Rotation
 from torchvision.transforms import Compose, Resize, ToTensor
-from torchmeta.utils.data import BatchMetaDataLoader
+from torchmetal.utils.data import BatchMetaDataLoader
 
 dataset = Omniglot("data",
                    # Number of ways
@@ -97,16 +94,8 @@ dataloader = BatchMetaDataLoader(dataset, batch_size=16, num_workers=4)
 ```
 Note that the dataloader, receiving the dataset, remains the same.
 
-## Citation
-> Tristan Deleu, Tobias Würfl, Mandana Samiei, Joseph Paul Cohen, and Yoshua Bengio. Torchmeta: A Meta-Learning library for PyTorch, 2019 [[ArXiv](https://arxiv.org/abs/1909.06576)]
 
-If you want to cite Torchmeta, use the following Bibtex entry:
-```
-@misc{deleu2019torchmeta,
-  title={{Torchmeta: A Meta-Learning library for PyTorch}},
-  author={Deleu, Tristan and W\"urfl, Tobias and Samiei, Mandana and Cohen, Joseph Paul and Bengio, Yoshua},
-  year={2019},
-  url={https://arxiv.org/abs/1909.06576},
-  note={Available at: https://github.com/tristandeleu/pytorch-meta}
-}
-```
+[pytorch]: https://pytorch.org/
+[torchvision]: https://pytorch.org/docs/stable/torchvision/index.html
+[pt-dataloader]: https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader
+[pt-module]: https://pytorch.org/docs/stable/nn.html#torch.nn.Module
