@@ -1,15 +1,15 @@
-import numpy as np
-from PIL import Image
-import h5py
+import io
 import json
 import os
-import io
 import pickle
 
-from torchmetal.utils.data import Dataset, ClassDataset, CombinationMetaDataset
+import h5py
+import numpy as np
+from PIL import Image
 
 # QKFIX: See torchmetal.datasets.utils for more informations
 from torchmetal.datasets.utils import download_file_from_google_drive
+from torchmetal.utils.data import ClassDataset, CombinationMetaDataset, Dataset
 
 
 class TieredImagenet(CombinationMetaDataset):
@@ -213,8 +213,9 @@ class TieredImagenetClassDataset(ClassDataset):
         )
 
     def download(self):
-        import tarfile
         import shutil
+        import tarfile
+
         from tqdm import tqdm
 
         if self._check_integrity():

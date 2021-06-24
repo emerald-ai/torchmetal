@@ -1,13 +1,12 @@
-import os
-import torch
-from tqdm import tqdm
 import logging
+import os
 
+import torch
+from model import MatchingNetwork
 from torchmeta.datasets.helpers import omniglot
 from torchmeta.utils.data import BatchMetaDataLoader
 from torchmeta.utils.matching import matching_log_probas, matching_loss
-
-from model import MatchingNetwork
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 

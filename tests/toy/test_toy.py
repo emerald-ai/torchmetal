@@ -1,11 +1,10 @@
-import pytest
-
-import numpy as np
 from collections import OrderedDict
 
-from torchmetal.utils.data import Task, MetaDataset
-from torchmetal.toy import Sinusoid, Harmonic, SinusoidAndLine
-from torchmetal.toy import helpers
+import numpy as np
+import pytest
+
+from torchmetal.toy import Harmonic, Sinusoid, SinusoidAndLine, helpers
+from torchmetal.utils.data import MetaDataset, Task
 
 
 @pytest.mark.parametrize("dataset_class", [Sinusoid, Harmonic, SinusoidAndLine])

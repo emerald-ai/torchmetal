@@ -1,6 +1,7 @@
+from collections import OrderedDict
+
 import torch
 
-from collections import OrderedDict
 from torchmetal.modules import MetaModule
 
 

@@ -1,9 +1,9 @@
-import torch
-import torch.nn.functional as F
 import warnings
-
 from collections import namedtuple
 from math import sqrt
+
+import torch
+import torch.nn.functional as F
 
 __all__ = ["ridge_regression"]
 

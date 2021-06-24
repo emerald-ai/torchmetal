@@ -1,5 +1,6 @@
-from torch.utils.data import ConcatDataset, Subset
+from torch.utils.data import ConcatDataset
 from torch.utils.data import Dataset as Dataset_
+from torch.utils.data import Subset
 from torchvision.transforms import Compose
 
 __all__ = ["Dataset", "Task", "ConcatTask", "SubsetTask"]

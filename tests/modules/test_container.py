@@ -1,11 +1,11 @@
-import pytest
-
-import numpy as np
-import torch
-import torch.nn as nn
 from collections import OrderedDict
 
-from torchmetal.modules import MetaSequential, MetaModule, MetaLinear
+import numpy as np
+import pytest
+import torch
+import torch.nn as nn
+
+from torchmetal.modules import MetaLinear, MetaModule, MetaSequential
 
 
 def test_metasequential():

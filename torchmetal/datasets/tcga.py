@@ -1,13 +1,14 @@
-import os
+import copy
 import json
+import os
+
 import h5py
 import numpy as np
 import torch
-import copy
-
 from ordered_set import OrderedSet
-from torchmetal.utils.data import Task, MetaDataset
+
 from torchmetal.datasets.utils import get_asset
+from torchmetal.utils.data import MetaDataset, Task
 
 
 class TCGA(MetaDataset):
@@ -299,9 +300,10 @@ class TCGA(MetaDataset):
         try:
             import gzip
             import shutil
+
+            import academictorrents as at
             import pandas as pd
             from six.moves import urllib
-            import academictorrents as at
         except ImportError as exception:
             raise ImportError(
                 "{0}. To use the TCGA dataset, you need to "
@@ -488,8 +490,8 @@ class TCGATask(Task):
 
 
 def _assign_samples(tcga_metadataset):
-    import pandas as pd
     import munkres
+    import pandas as pd
 
     blacklist = []
     sample_to_task_assignment = {}

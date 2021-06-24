@@ -1,8 +1,9 @@
-import torch
-from torchmetal.transforms.utils import apply_wrapper
 from collections import defaultdict
 
+import torch
+
 from torchmetal.transforms.target_transforms import TargetTransform
+from torchmetal.transforms.utils import apply_wrapper
 
 
 class Categorical(TargetTransform):

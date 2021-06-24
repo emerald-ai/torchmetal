@@ -1,13 +1,13 @@
-import pytest
-
 import os
+
+import pytest
 import torch
 from torch.utils.data import DataLoader
 
 from torchmetal.datasets import helpers
 from torchmetal.toy import Sinusoid
 from torchmetal.transforms import ClassSplitter
-from torchmetal.utils.data import Task, MetaDataLoader, BatchMetaDataLoader
+from torchmetal.utils.data import BatchMetaDataLoader, MetaDataLoader, Task
 
 is_local = os.getenv("TORCHMETAL_DATA_FOLDER") is not None
 

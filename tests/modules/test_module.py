@@ -1,9 +1,9 @@
-import pytest
+from collections import OrderedDict
 
+import pytest
 import torch
 import torch.nn as nn
 
-from collections import OrderedDict
 from torchmetal.modules import MetaLinear, MetaModule, MetaSequential
 
 

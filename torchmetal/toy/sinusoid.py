@@ -1,6 +1,6 @@
 import numpy as np
 
-from torchmetal.utils.data import Task, MetaDataset
+from torchmetal.utils.data import MetaDataset, Task
 
 
 class Sinusoid(MetaDataset):

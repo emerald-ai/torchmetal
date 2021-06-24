@@ -1,7 +1,7 @@
 import numpy as np
 
-from torchmetal.utils.data import Task, MetaDataset
 from torchmetal.toy.sinusoid import SinusoidTask
+from torchmetal.utils.data import MetaDataset, Task
 
 
 class SinusoidAndLine(MetaDataset):

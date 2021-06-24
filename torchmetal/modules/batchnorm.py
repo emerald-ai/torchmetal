@@ -1,8 +1,9 @@
+from collections import OrderedDict
+
 import torch.nn as nn
 import torch.nn.functional as F
-
-from collections import OrderedDict
 from torch.nn.modules.batchnorm import _BatchNorm
+
 from torchmetal.modules.module import MetaModule
 
 

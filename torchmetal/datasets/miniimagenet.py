@@ -1,13 +1,13 @@
+import json
 import os
 import pickle
-from PIL import Image
-import h5py
-import json
 
-from torchmetal.utils.data import Dataset, ClassDataset, CombinationMetaDataset
+import h5py
+from PIL import Image
 
 # QKFIX: See torchmetal.datasets.utils for more informations
 from torchmetal.datasets.utils import download_file_from_google_drive
+from torchmetal.utils.data import ClassDataset, CombinationMetaDataset, Dataset
 
 
 class MiniImagenet(CombinationMetaDataset):

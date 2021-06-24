@@ -1,10 +1,10 @@
-import pytest
-
 import os
+
+import pytest
 import torch
 
-from torchmetal.utils.data import MetaDataset, Task
 from torchmetal.datasets import helpers
+from torchmetal.utils.data import MetaDataset, Task
 
 is_local = os.getenv("TORCHMETAL_DATA_FOLDER") is not None
 

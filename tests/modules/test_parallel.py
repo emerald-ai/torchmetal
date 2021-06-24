@@ -1,10 +1,8 @@
 import pytest
-
 import torch
 import torch.nn as nn
 
-from torchmetal.modules import MetaLinear, MetaSequential
-from torchmetal.modules import DataParallel
+from torchmetal.modules import DataParallel, MetaLinear, MetaSequential
 from torchmetal.utils.gradient_based import gradient_update_parameters
 
 is_multi_gpu = torch.cuda.device_count() > 1

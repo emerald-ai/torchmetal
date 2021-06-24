@@ -1,9 +1,10 @@
 import importlib
 import inspect
-import re
-import yaml
 import logging
+import re
+
 import torch.nn as nn
+import yaml
 
 LAST_CHARACTER = re.compile(r"^[\w\.,\"\`]$")
 HEADER = re.compile(r"^\-+$")

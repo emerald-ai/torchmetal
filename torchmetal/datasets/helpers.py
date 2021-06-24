@@ -1,23 +1,12 @@
 import warnings
 
-from torchmetal.datasets import (
-    Omniglot,
-    MiniImagenet,
-    TieredImagenet,
-    CIFARFS,
-    FC100,
-    CUB,
-    DoubleMNIST,
-    TripleMNIST,
-    Pascal5i,
-)
-from torchmetal.transforms import (
-    Categorical,
-    ClassSplitter,
-    Rotation,
-    SegmentationPairTransform,
-)
-from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor
+from torchvision.transforms import CenterCrop, Compose, Resize, ToTensor
+
+from torchmetal.datasets import (CIFARFS, CUB, FC100, DoubleMNIST,
+                                 MiniImagenet, Omniglot, Pascal5i,
+                                 TieredImagenet, TripleMNIST)
+from torchmetal.transforms import (Categorical, ClassSplitter, Rotation,
+                                   SegmentationPairTransform)
 
 __all__ = [
     "omniglot",

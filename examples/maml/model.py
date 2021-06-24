@@ -1,11 +1,6 @@
 import torch.nn as nn
-from torchmeta.modules import (
-    MetaModule,
-    MetaSequential,
-    MetaConv2d,
-    MetaBatchNorm2d,
-    MetaLinear,
-)
+from torchmeta.modules import (MetaBatchNorm2d, MetaConv2d, MetaLinear,
+                               MetaModule, MetaSequential)
 
 
 def conv3x3(in_channels, out_channels, **kwargs):

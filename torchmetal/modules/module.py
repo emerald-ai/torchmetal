@@ -1,9 +1,9 @@
-import torch
-import torch.nn as nn
 import re
 import warnings
-
 from collections import OrderedDict
+
+import torch
+import torch.nn as nn
 
 
 class MetaModule(nn.Module):

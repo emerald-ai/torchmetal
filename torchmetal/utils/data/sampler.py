@@ -1,7 +1,8 @@
 import random
 import warnings
 from itertools import combinations
-from torch.utils.data.sampler import SequentialSampler, RandomSampler
+
+from torch.utils.data.sampler import RandomSampler, SequentialSampler
 
 from torchmetal.utils.data.dataset import CombinationMetaDataset
 

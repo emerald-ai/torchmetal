@@ -1,6 +1,6 @@
 import warnings
 
-from torchmetal.toy import Sinusoid, Harmonic
+from torchmetal.toy import Harmonic, Sinusoid
 from torchmetal.transforms import ClassSplitter
 
 

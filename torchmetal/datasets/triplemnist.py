@@ -1,16 +1,16 @@
-import numpy as np
-from PIL import Image
-import os
+import glob
 import io
 import json
-import glob
-import h5py
+import os
 
-from torchmetal.utils.data import Dataset, ClassDataset, CombinationMetaDataset
+import h5py
+import numpy as np
+from PIL import Image
 
 # QKFIX: See torchmetal.datasets.utils for more informations
-from torchmetal.datasets.utils import download_file_from_google_drive
-from torchmetal.datasets.utils import get_asset
+from torchmetal.datasets.utils import (download_file_from_google_drive,
+                                       get_asset)
+from torchmetal.utils.data import ClassDataset, CombinationMetaDataset, Dataset
 
 
 class TripleMNIST(CombinationMetaDataset):
@@ -213,9 +213,10 @@ class TripleMNISTClassDataset(ClassDataset):
             self._data = None
 
     def download(self):
-        import zipfile
-        import shutil
         import glob
+        import shutil
+        import zipfile
+
         from tqdm import tqdm
 
         if self._check_integrity():

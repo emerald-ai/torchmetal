@@ -5,10 +5,8 @@ from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset as TorchDataset
 
 from torchmetal.utils.data.dataset import CombinationMetaDataset
-from torchmetal.utils.data.sampler import (
-    CombinationSequentialSampler,
-    CombinationRandomSampler,
-)
+from torchmetal.utils.data.sampler import (CombinationRandomSampler,
+                                           CombinationSequentialSampler)
 
 
 class BatchMetaCollate(object):

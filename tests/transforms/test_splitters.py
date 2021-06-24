@@ -1,11 +1,11 @@
-import pytest
+from collections import OrderedDict
 
 import numpy as np
-from collections import OrderedDict
+import pytest
 from ordered_set import OrderedSet
 
-from torchmetal.transforms.splitters import ClassSplitter
 from torchmetal.toy import Sinusoid
+from torchmetal.transforms.splitters import ClassSplitter
 from torchmetal.utils.data import Task
 
 

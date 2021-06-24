@@ -1,11 +1,12 @@
-import numpy as np
-import os
 import json
-import h5py
-from PIL import Image
+import os
 
+import h5py
+import numpy as np
+from PIL import Image
 from torchvision.datasets.utils import check_integrity, download_url
-from torchmetal.utils.data import Dataset, ClassDataset
+
+from torchmetal.utils.data import ClassDataset, Dataset
 
 
 class CIFAR100ClassDataset(ClassDataset):
@@ -110,9 +111,9 @@ class CIFAR100ClassDataset(ClassDataset):
             self._data = None
 
     def download(self):
-        import tarfile
         import pickle
         import shutil
+        import tarfile
 
         if self._check_integrity_data():
             return

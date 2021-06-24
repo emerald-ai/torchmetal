@@ -6,16 +6,17 @@
 ; Date:   18 March 2020
 ;==========================================
 """
-import os
-import json
 import glob
-import h5py
-from PIL import Image, ImageOps
+import json
+import os
 
-from torchmetal.utils.data import Dataset, ClassDataset, CombinationMetaDataset
-from torchvision.datasets.utils import list_dir, download_url
-from torchmetal.datasets.utils import get_asset
+import h5py
 import numpy as np
+from PIL import Image, ImageOps
+from torchvision.datasets.utils import download_url, list_dir
+
+from torchmetal.datasets.utils import get_asset
+from torchmetal.utils.data import ClassDataset, CombinationMetaDataset, Dataset
 
 
 class Pascal5i(CombinationMetaDataset):
@@ -272,9 +273,9 @@ class Pascal5iClassDataset(ClassDataset):
         return self._labels[1:]
 
     def download(self):
-        import zipfile
-        import tarfile
         import shutil
+        import tarfile
+        import zipfile
 
         for dload in self.downloads:
             filename = os.path.join(self.root, dload["filename"])

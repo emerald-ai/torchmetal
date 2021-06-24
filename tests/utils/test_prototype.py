@@ -1,13 +1,9 @@
-import pytest
-
 import numpy as np
+import pytest
 import torch
 
-from torchmetal.utils.prototype import (
-    get_num_samples,
-    get_prototypes,
-    prototypical_loss,
-)
+from torchmetal.utils.prototype import (get_num_samples, get_prototypes,
+                                        prototypical_loss)
 
 
 @pytest.mark.parametrize("dtype", [None, torch.float32])

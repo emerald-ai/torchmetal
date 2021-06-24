@@ -1,16 +1,14 @@
-import os
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from tqdm import tqdm
 import logging
-
+import os
 from collections import OrderedDict
 
 import higher  # tested with higher v0.2
-
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
 from torchmeta.datasets.helpers import omniglot
 from torchmeta.utils.data import BatchMetaDataLoader
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 

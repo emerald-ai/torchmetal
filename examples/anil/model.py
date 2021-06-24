@@ -1,5 +1,5 @@
 import torch.nn as nn
-from torchmeta.modules import MetaModule, MetaLinear
+from torchmeta.modules import MetaLinear, MetaModule
 
 
 def conv3x3(in_channels, out_channels, **kwargs):

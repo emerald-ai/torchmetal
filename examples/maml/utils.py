@@ -1,6 +1,6 @@
-import torch
-
 from collections import OrderedDict
+
+import torch
 
 
 def get_accuracy(logits, targets):

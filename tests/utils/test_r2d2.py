@@ -1,10 +1,10 @@
-import pytest
+from collections import OrderedDict
 
 import numpy as np
+import pytest
 import torch
 import torch.nn.functional as F
 
-from collections import OrderedDict
 from torchmetal.modules import MetaLinear
 from torchmetal.utils.r2d2 import ridge_regression
 

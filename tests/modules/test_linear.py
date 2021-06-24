@@ -1,12 +1,12 @@
-import pytest
-
-import numpy as np
-import torch
-import torch.nn as nn
 from collections import OrderedDict
 
+import numpy as np
+import pytest
+import torch
+import torch.nn as nn
+
 from torchmetal.modules import MetaModule
-from torchmetal.modules.linear import MetaLinear, MetaBilinear
+from torchmetal.modules.linear import MetaBilinear, MetaLinear
 
 
 @pytest.mark.parametrize("bias", [True, False])

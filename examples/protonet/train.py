@@ -1,13 +1,12 @@
-import os
-import torch
-from tqdm import tqdm
 import logging
+import os
 
+import torch
+from model import PrototypicalNetwork
 from torchmeta.datasets.helpers import omniglot
 from torchmeta.utils.data import BatchMetaDataLoader
 from torchmeta.utils.prototype import get_prototypes, prototypical_loss
-
-from model import PrototypicalNetwork
+from tqdm import tqdm
 from utils import get_accuracy
 
 logger = logging.getLogger(__name__)

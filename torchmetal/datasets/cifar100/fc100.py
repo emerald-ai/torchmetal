@@ -1,5 +1,5 @@
-import os
 import json
+import os
 
 from torchmetal.datasets.cifar100.base import CIFAR100ClassDataset
 from torchmetal.datasets.utils import get_asset

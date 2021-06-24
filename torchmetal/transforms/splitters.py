@@ -1,9 +1,10 @@
-import torch
-import numpy as np
-
 from collections import OrderedDict, defaultdict
-from torchmetal.utils.data.task import Task, ConcatTask, SubsetTask
+
+import numpy as np
+import torch
+
 from torchmetal.transforms.utils import apply_wrapper
+from torchmetal.utils.data.task import ConcatTask, SubsetTask, Task
 
 __all__ = ["Splitter", "ClassSplitter", "WeightedClassSplitter"]
 

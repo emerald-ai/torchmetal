@@ -1,12 +1,13 @@
-import os
-import json
 import glob
+import json
+import os
+
 import h5py
 from PIL import Image, ImageOps
+from torchvision.datasets.utils import download_url, list_dir
 
-from torchmetal.utils.data import Dataset, ClassDataset, CombinationMetaDataset
-from torchvision.datasets.utils import list_dir, download_url
 from torchmetal.datasets.utils import get_asset
+from torchmetal.utils.data import ClassDataset, CombinationMetaDataset, Dataset
 
 
 class Omniglot(CombinationMetaDataset):
@@ -228,8 +229,8 @@ class OmniglotClassDataset(ClassDataset):
             self._data = None
 
     def download(self):
-        import zipfile
         import shutil
+        import zipfile
 
         if self._check_integrity():
             return

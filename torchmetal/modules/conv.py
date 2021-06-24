@@ -1,8 +1,9 @@
+from collections import OrderedDict
+
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn.modules.utils import _pair, _single, _triple
 
-from collections import OrderedDict
-from torch.nn.modules.utils import _single, _pair, _triple
 from torchmetal.modules.module import MetaModule
 
 

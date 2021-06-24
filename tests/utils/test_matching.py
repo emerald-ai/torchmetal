@@ -1,14 +1,10 @@
-import pytest
-
 import numpy as np
+import pytest
 import torch
 
-from torchmetal.utils.matching import (
-    pairwise_cosine_similarity,
-    matching_log_probas,
-    matching_probas,
-    matching_loss,
-)
+from torchmetal.utils.matching import (matching_log_probas, matching_loss,
+                                       matching_probas,
+                                       pairwise_cosine_similarity)
 
 
 def test_pairwise_similarity():

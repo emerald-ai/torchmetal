@@ -1,14 +1,13 @@
+import logging
 import os
+
 import torch
 import torch.nn.functional as F
-from tqdm import tqdm
-import logging
-
+from model import ConvolutionalNeuralNetwork
 from torchmeta.datasets.helpers import omniglot
 from torchmeta.utils.data import BatchMetaDataLoader
 from torchmeta.utils.gradient_based import gradient_update_parameters
-
-from model import ConvolutionalNeuralNetwork
+from tqdm import tqdm
 from utils import get_accuracy
 
 logger = logging.getLogger(__name__)

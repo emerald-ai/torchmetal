@@ -1,5 +1,5 @@
-from torchvision.transforms import Compose, Resize, ToTensor
 import PIL
+from torchvision.transforms import Compose, Resize, ToTensor
 
 
 class SegmentationPairTransform(object):

@@ -1,16 +1,16 @@
 import sys
-import numpy as np
 import warnings
 from copy import deepcopy
-
 from itertools import combinations
-from ordered_set import OrderedSet
 
+import numpy as np
+from ordered_set import OrderedSet
 from torchvision.transforms import Compose
 
-from torchmetal.utils.data.task import ConcatTask
-from torchmetal.transforms import FixedCategory, Categorical, DefaultTargetTransform
+from torchmetal.transforms import (Categorical, DefaultTargetTransform,
+                                   FixedCategory)
 from torchmetal.transforms.utils import wrap_transform
+from torchmetal.utils.data.task import ConcatTask
 
 __all__ = ["ClassDataset", "MetaDataset", "CombinationMetaDataset"]
 

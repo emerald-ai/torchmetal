@@ -1,9 +1,9 @@
-import pytest
+from collections import OrderedDict
 
 import numpy as np
+import pytest
 import torch
 import torch.nn as nn
-from collections import OrderedDict
 
 from torchmetal.modules import MetaModule
 from torchmetal.modules.activation import MetaMultiheadAttention
