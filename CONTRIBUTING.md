@@ -48,6 +48,17 @@ Open an issue using the bug issue template.
 Open an issue using the enhancement issue template.
 
 
+## Things to know
+
+Running tests that use datasets require setting environment variables as
+follows.
+
+```bash
+export TORCHMETAL_DATA_FOLDER="$HOME/my/datasets/"
+export TORCHMETAL_DOWNLOAD=true
+```
+
+
 [discus]: https://github.com/sevro/torchmetal/discussions
 [issues]: https://github.com/sevro/torchmetal/issues
 [black]: https://github.com/psf/black
