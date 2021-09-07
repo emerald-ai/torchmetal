@@ -371,11 +371,3 @@ class CombinationMetaDataset(MetaDataset):
             )
             length = sys.maxsize
         return int(length)
-
-
-def _seed_dataset_transform(transform, seed=None):
-    if isinstance(transform, Compose):
-        for subtransform in transform.transforms:
-            _seed_dataset_transform(subtransform, seed=seed)
-    elif hasattr(transform, "seed"):
-        transform.seed(seed=seed)

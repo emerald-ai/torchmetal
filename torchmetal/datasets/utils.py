@@ -1,5 +1,12 @@
 import os
+import logging
+import h5py
+import io
 import json
+import numpy
+
+from PIL import Image
+from PIL import ImageOps
 
 
 def get_asset_path(*args):
@@ -86,21 +93,3 @@ def download_file_from_google_drive(file_id, root, filename=None, md5=None):
             raise RuntimeError(msg)
 
         _save_response_content(response, fpath)
-
-
-def download_file_generic(url, root, filename=None, md5=None):
-    import requests
-
-    root = os.path.expanduser(root)
-    fpath = os.path.join(root, filename)
-
-    if os.path.isfile(fpath) and check_integrity(fpath, md5):
-        print('Using downloaded and verified file: ' + fpath)
-    else:
-        try:
-            response = requests.get(url, stream=True)
-            if response.status_code == 200:
-                with open(fpath, 'wb') as f:
-                    f.write(response.raw.read())
-        except requests.exceptions.RequestException as e:
-            raise RuntimeError(e)

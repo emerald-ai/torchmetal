@@ -1,0 +1,74 @@
+.converter_args_template: &converter_args
+  records_root:
+    'records'
+  splits_root:
+    'splits'
+  data_root:
+    'data'
+  split_file:
+    'default'
+
+data_set:
+  omniglot:
+    name:
+      'omniglot'
+    <<: *converter_args
+  aircraft:
+    name:
+      'aircraft'
+    <<: *converter_args
+  cu_birds:
+    name:
+      'cu_birds'
+    <<: *converter_args
+  dtd:
+    name:
+      'dtd'
+    <<: *converter_args
+  quickdraw:
+    name:
+      'quickdraw'
+    <<: *converter_args
+  fungi:
+    name:
+      'fungi'
+    <<: *converter_args
+  vgg_flower:
+    name:
+      'vgg_flower'
+    <<: *converter_args
+  traffic_sign:
+    name:
+      'traffic_sign'
+    <<: *converter_args
+  mscoco:
+    name:
+      'mscoco'
+    <<: *converter_args
+  mini_imagenet:
+    name:
+      'mini_imagenet'
+    ilsvrc_2012_num_leaf_images_path:
+      'ilsvrc_2012/num_leaf_images.json'
+    <<: *converter_args
+  ilsvrc_2012:
+    name:
+      'ilsvrc_2012'
+    <<: *converter_args
+  ilsvrc_2012_v2:
+    name:
+      'ilsvrc_2012_v2'
+    <<: *converter_args
+
+
+mini_imagenet_records_dir:
+  ''
+ilsvrc_2012_num_leaf_images_path:
+  'ilsvrc_2012/num_leaf_images.json'
+path_to_is_a:
+  'wordnet.is_a.txt'
+path_to_words:
+  'words.txt'
+
+dataset:
+  'omniglot'

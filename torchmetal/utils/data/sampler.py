@@ -17,7 +17,7 @@ class CombinationSequentialSampler(SequentialSampler):
                 "`CombinationMetaDataset`, but found "
                 "{0}".format(type(data_source))
             )
-        super(CombinationSequentialSampler, self).__init__(data_source)
+        super().__init__(data_source)
 
     def __iter__(self):
         num_classes = len(self.data_source.dataset)
@@ -39,7 +39,7 @@ class CombinationRandomSampler(RandomSampler):
         # does not use the length of the dataset.
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            super(CombinationRandomSampler, self).__init__(
+            super().__init__(
                 data_source, replacement=True
             )
 
