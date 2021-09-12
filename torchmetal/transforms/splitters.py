@@ -81,6 +81,7 @@ class ClassSplitter_(Splitter):
     def __init__(
         self,
         shuffle=True,
+        variable_class_split=None,
         num_samples_per_class=None,
         num_train_per_class=None,
         num_test_per_class=None,
@@ -144,6 +145,23 @@ class ClassSplitter_(Splitter):
 
         if num_samples_per_class is None:
             num_samples_per_class = OrderedDict()
+        super(ClassSplitter_, self).__init__(num_samples_per_class, random_state_seed)
+
+        self.set_num_train_test(variable_class_split, num_samples_per_class, num_train_per_class,
+                           num_support_per_class, num_test_per_class,
+                           num_query_per_class)
+
+
+    def set_num_train_test(self, variable_class_split=None, num_samples_per_class=None, num_train_per_class=None,
+                           num_support_per_class=None, num_test_per_class=None,
+                           num_query_per_class=None):
+
+        if variable_class_split is not None:
+            self.splits = variable_class_split
+
+        else:
+            if num_samples_per_class is None:
+                num_samples_per_class = OrderedDict()
             if num_train_per_class is not None:
                 num_samples_per_class["train"] = num_train_per_class
             elif num_support_per_class is not None:
@@ -152,10 +170,9 @@ class ClassSplitter_(Splitter):
                 num_samples_per_class["test"] = num_test_per_class
             elif num_query_per_class is not None:
                 num_samples_per_class["query"] = num_query_per_class
-        assert len(num_samples_per_class) > 0
-
-        self._min_samples_per_class = sum(num_samples_per_class.values())
-        super(ClassSplitter_, self).__init__(num_samples_per_class, random_state_seed)
+            assert len(num_samples_per_class) > 0
+            self._min_samples_per_class = sum(num_samples_per_class.values())
+            self.splits = num_samples_per_class
 
     def get_indices_task(self, task):
         all_class_indices = self._get_class_indices(task)
@@ -172,19 +189,31 @@ class ClassSplitter_(Splitter):
                     )
                 )
 
-            if self.shuffle:
-                seed = (hash(task) + i + self.random_state_seed) % (2 ** 32)
-                dataset_indices = np.random.RandomState(seed).permutation(num_samples)
-            else:
-                dataset_indices = np.arange(num_samples)
+            if isinstance(self.splits, list):
+                ptr = 0
+                #TODO: redisign for one pass through where before there was one for support one for query
+                #      also set for each klass
+                for klass, num_support, num_query in self.splits:
+                    split_indices = dataset_indices[ptr : ptr + num_split]
+                    if self.shuffle:
+                        self.np_random.shuffle(split_indices)
+                    indices[split].extend([class_indices[idx] for idx in split_indices])
+                    ptr += num_split
 
-            ptr = 0
-            for split, num_split in self.splits.items():
-                split_indices = dataset_indices[ptr : ptr + num_split]
+            else:
                 if self.shuffle:
-                    self.np_random.shuffle(split_indices)
-                indices[split].extend([class_indices[idx] for idx in split_indices])
-                ptr += num_split
+                    seed = (hash(task) + i + self.random_state_seed) % (2 ** 32)
+                    dataset_indices = np.random.RandomState(seed).permutation(num_samples)
+                else:
+                    dataset_indices = np.arange(num_samples)
+
+                ptr = 0
+                for split, num_split in self.splits.items():
+                    split_indices = dataset_indices[ptr : ptr + num_split]
+                    if self.shuffle:
+                        self.np_random.shuffle(split_indices)
+                    indices[split].extend([class_indices[idx] for idx in split_indices])
+                    ptr += num_split
 
         return indices
 
