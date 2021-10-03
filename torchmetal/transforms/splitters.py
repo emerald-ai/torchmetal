@@ -141,6 +141,7 @@ class ClassSplitter_(Splitter):
         >>> len(task['train']), len(task['test'])
         (25, 75)
         """
+        self.variable_class_split = variable_class_split
         self.shuffle = shuffle
 
         if num_samples_per_class is None:
@@ -180,60 +181,18 @@ class ClassSplitter_(Splitter):
 
         for i, (name, class_indices) in enumerate(all_class_indices.items()):
             num_samples = len(class_indices)
-            if num_samples < self._min_samples_per_class:
-                raise ValueError(
-                    "The number of samples for class `{0}` ({1}) "
-                    "is smaller than the minimum number of samples per class "
-                    "required by `ClassSplitter` ({2}).".format(
-                        name, num_samples, self._min_samples_per_class
+            if self.variable_class_split is None:
+                if num_samples < self._min_samples_per_class:
+                    raise ValueError(
+                        "The number of samples for class `{0}` ({1}) "
+                        "is smaller than the minimum number of samples per class "
+                        "required by `ClassSplitter` ({2}).".format(
+                            name, num_samples, self._min_samples_per_class
+                        )
                     )
-                )
-
-            if isinstance(self.splits, list):
-                ptr = 0
-                #TODO: redisign for one pass through where before there was one for support one for query
-                #      also set for each klass
-                for klass, num_support, num_query in self.splits:
-                    split_indices = dataset_indices[ptr : ptr + num_split]
-                    if self.shuffle:
-                        self.np_random.shuffle(split_indices)
-                    indices[split].extend([class_indices[idx] for idx in split_indices])
-                    ptr += num_split
-
-            else:
-                if self.shuffle:
-                    seed = (hash(task) + i + self.random_state_seed) % (2 ** 32)
-                    dataset_indices = np.random.RandomState(seed).permutation(num_samples)
-                else:
-                    dataset_indices = np.arange(num_samples)
-
-                ptr = 0
-                for split, num_split in self.splits.items():
-                    split_indices = dataset_indices[ptr : ptr + num_split]
-                    if self.shuffle:
-                        self.np_random.shuffle(split_indices)
-                    indices[split].extend([class_indices[idx] for idx in split_indices])
-                    ptr += num_split
-
-        return indices
-
-    def get_indices_concattask(self, task):
-        indices = OrderedDict([(split, []) for split in self.splits])
-        cum_size = 0
-
-        for dataset in task.datasets:
-            num_samples = len(dataset)
-            if num_samples < self._min_samples_per_class:
-                raise ValueError(
-                    "The number of samples for one class ({0}) "
-                    "is smaller than the minimum number of samples per class "
-                    "required by `ClassSplitter` ({1}).".format(
-                        num_samples, self._min_samples_per_class
-                    )
-                )
 
             if self.shuffle:
-                seed = (hash(task) + hash(dataset) + self.random_state_seed) % (2 ** 32)
+                seed = (hash(task) + i + self.random_state_seed) % (2 ** 32)
                 dataset_indices = np.random.RandomState(seed).permutation(num_samples)
             else:
                 dataset_indices = np.arange(num_samples)
@@ -243,9 +202,80 @@ class ClassSplitter_(Splitter):
                 split_indices = dataset_indices[ptr : ptr + num_split]
                 if self.shuffle:
                     self.np_random.shuffle(split_indices)
-                indices[split].extend(split_indices + cum_size)
+                indices[split].extend([class_indices[idx] for idx in split_indices])
                 ptr += num_split
-            cum_size += num_samples
+
+        return indices
+
+    def get_indices_concattask(self, task):
+        indices = OrderedDict([("train", []), ("test", [])])
+        cum_size = 0
+
+        if self.variable_class_split:
+            for dataset in task.datasets:
+                index = dataset.index
+                for split in self.splits:
+                    if split[0] == index:
+                        this_split = {'train': split[1],
+                                      'test': split[2]
+                                      }
+                if this_split is None:
+                    raise ValueError(
+                        f"There is no index {index} inside the samplers return "
+                        "of {splits}"
+                    )
+                num_samples = len(dataset)
+               # if num_samples < self._min_samples_per_class:
+               #     raise ValueError(
+               #         "The number of samples for one class ({0}) "
+               #         "is smaller than the minimum number of samples per class "
+               #         "required by `ClassSplitter` ({1}).".format(
+               #             num_samples, self._min_samples_per_class
+               #         )
+               #     )
+
+                if self.shuffle:
+                    seed = (hash(task) + hash(dataset) + self.random_state_seed) % (2 ** 32)
+                    dataset_indices = np.random.RandomState(seed).permutation(num_samples)
+                else:
+                    dataset_indices = np.arange(num_samples)
+
+                ptr = 0
+                for split, num_split in this_split.items():
+                    split_indices = dataset_indices[ptr : ptr + num_split]
+                    if self.shuffle:
+                        self.np_random.shuffle(split_indices)
+                    indices[split].extend(split_indices + cum_size)
+                    ptr += num_split
+                cum_size += num_samples
+            self.splits = this_split
+
+        else:
+            for dataset in task.datasets:
+                num_samples = len(dataset)
+                if num_samples < self._min_samples_per_class:
+                    raise ValueError(
+                        "The number of samples for one class ({0}) "
+                        "is smaller than the minimum number of samples per class "
+                        "required by `ClassSplitter` ({1}).".format(
+                            num_samples, self._min_samples_per_class
+                        )
+                    )
+
+                if self.shuffle:
+                    seed = (hash(task) + hash(dataset) + self.random_state_seed) % (2 ** 32)
+                    dataset_indices = np.random.RandomState(seed).permutation(num_samples)
+                else:
+                    dataset_indices = np.arange(num_samples)
+
+                ptr = 0
+                for split, num_split in self.splits.items():
+                    split_indices = dataset_indices[ptr : ptr + num_split]
+                    if self.shuffle:
+                        self.np_random.shuffle(split_indices)
+                    indices[split].extend(split_indices + cum_size)
+                    ptr += num_split
+                cum_size += num_samples
 
         return indices
 

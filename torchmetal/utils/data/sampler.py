@@ -1,12 +1,16 @@
 import random
+import numpy as np
 import warnings
 from itertools import combinations
 
 from torch.utils.data.sampler import RandomSampler, SequentialSampler
-
+from torchmetal.datasets.metadataset.data.learning_spec import Split
 from torchmetal.utils.data.dataset import CombinationMetaDataset
+from torchmetal.datasets.metadataset.config.config import EpisodeDescriptionConfig
+from torchmetal.datasets.metadataset.data.dataset_spec import load_dataset_spec
 
 __all__ = ["CombinationSequentialSampler", "CombinationRandomSampler"]
+RNG = np.random.RandomState(seed=None)
 
 
 class CombinationSequentialSampler(SequentialSampler):
@@ -47,7 +51,7 @@ class CombinationRandomSampler(RandomSampler):
         for _ in combinations(range(num_classes), num_classes_per_task):
             yield tuple(random.sample(range(num_classes), num_classes_per_task))
 
-class MetaDataSampler(SequetialSampler):
+class MetaDataSampler(SequentialSampler):
     def __init__(self, data_source):
         if not isinstance(data_source, CombinationMetaDataset):
             raise TypeError(
@@ -55,23 +59,39 @@ class MetaDataSampler(SequetialSampler):
                 "`CombinationMetaDataset`, but found "
                 "{0}".format(type(data_source))
             )
-        sampler = EpisodeDescriptionSampler(data_source.dataset_spec,
-                                            data_source.meta_split,
+        split = Split(0)
+        episode_descr_config = EpisodeDescriptionConfig(
+            num_ways = None,
+            num_support = None,
+            num_query = None,
+            min_ways = 5,
+            max_ways_upper_bound = 50,
+            max_num_query = 10,
+            max_support_set_size = 500,
+            max_support_size_contrib_per_class = 100,
+            min_log_weight = np.log(0.5),
+            max_log_weight = np.log(2),
+            ignore_dag_ontology = False,
+            ignore_bilevel_ontology = False,
+            ignore_hierarchy_probability = 0,
+            simclr_episode_fraction = 0)
+
+        dataset_spec = load_dataset_spec(str(data_source.dataset.dataset_spec.parent))
+        self.sampler = EpisodeDescriptionSampler(dataset_spec,
+                                            split,
                                             episode_descr_config,
                                             )
-        episode = sampler.sample_episode_description()
         # Temporarily disable the warning if the length of the length of the
         # dataset exceeds the machine precision. This avoids getting this
         # warning shown with MetaDataLoader, even though MetaDataLoader itself
         # does not use the length of the dataset.
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            super().__init__(data_source, replacement=True)
+            super().__init__(data_source)
 
     #TODO: decide on pass through structure
     def __iter__(self):
-        for element in episode:
-            return combinations(range(num_classes), num_classes_per_task)
+        yield(self.sampler.sample_episode_description())
 
 def sample_num_ways_uniformly(num_classes, min_ways, max_ways):
     """Samples a number of ways for an episode uniformly and at random.
@@ -533,8 +553,8 @@ class EpisodeDescriptionSampler(object):
         """Returns the composition of an episode.
         each
             Returns:
-              A sequence of `(class_id, dict{num_sample,
-              num_support, num_query})` tuples, where
+              A sequence of `(class_id, num_sample,
+              num_support, num_query)` tuples, where
                 relative `class_id` is an integer in [0, self.num_classes).
         """
         class_ids = self.sample_class_ids()

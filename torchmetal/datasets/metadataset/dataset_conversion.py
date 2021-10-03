@@ -1,5 +1,3 @@
-# coding=utf-8
-# Copyright 2021 The Meta-Dataset Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,6 +32,7 @@ from __future__ import print_function
 import collections
 import logging
 import json
+import pathlib
 
 from torchmetal.datasets.metadataset import dataset_to_hdf5
 from omegaconf import OmegaConf
@@ -58,10 +57,11 @@ import h5py as h5
 
 
 
-def main():
+def convert(root, dataset=None):
 
-
-    cfg = OmegaConf.load('./config/config.yaml')
+    cfg = OmegaConf.load(pathlib.Path(__file__).parent.resolve() / 'config/config.yaml')
+    if dataset is not None:
+        cfg.dataset = dataset
     for item, value in cfg.data_set.items():
         if value["name"] == cfg.dataset:
             converter_args = value
@@ -74,6 +74,7 @@ def main():
         if cfg.dataset == 'omniglot':
             converter =  dataset_to_hdf5.OmniglotConverter(
                                         cfg.dataset,
+                                        root,
                                         converter_args.get('data_root'),
                                         converter_args.get('splits_root'),
                                         converter_args.get('records_root')
@@ -81,6 +82,7 @@ def main():
         elif cfg.dataset == 'aircraft':
             converter = dataset_to_hdf5.AircraftConverter(
                                         cfg.dataset,
+                                        root,
                                         converter_args.get('data_root'),
                                         converter_args.get('splits_root'),
                                         converter_args.get('records_root'),
@@ -88,6 +90,7 @@ def main():
         elif cfg.dataset == 'cu_birds':
             converter = dataset_to_hdf5.CUBirdsConverter(
                                         cfg.dataset,
+                                        root,
                                         converter_args.get('data_root'),
                                         converter_args.get('splits_root'),
                                         converter_args.get('records_root'),
@@ -95,6 +98,7 @@ def main():
         elif cfg.dataset == 'dtd':
             converter = dataset_to_hdf5.DTDconverter(
                                         cfg.dataset,
+                                        root,
                                         converter_args.get('data_root'),
                                         converter_args.get('splits_root'),
                                         converter_args.get('records_root'),
@@ -102,6 +106,7 @@ def main():
         elif cfg.dataset == 'quickdraw':
             converter = dataset_to_hdf5.QuickdrawConverter(
                                         cfg.dataset,
+                                        root,
                                         converter_args.get('data_root'),
                                         converter_args.get('splits_root'),
                                         converter_args.get('records_root'),
@@ -109,6 +114,7 @@ def main():
         elif cfg.dataset == 'fungi':
             converter = dataset_to_hdf5.FungiConverter(
                                         cfg.dataset,
+                                        root,
                                         converter_args.get('data_root'),
                                         converter_args.get('splits_root'),
                                         converter_args.get('records_root'),
@@ -116,6 +122,7 @@ def main():
         elif cfg.dataset == 'vgg_flower':
             converter = dataset_to_hdf5.VGGFlowerConverter(
                                         cfg.dataset,
+                                        root,
                                         converter_args.get('data_root'),
                                         converter_args.get('splits_root'),
                                         converter_args.get('records_root'),
@@ -123,6 +130,7 @@ def main():
         elif cfg.dataset == 'traffic_sign':
             converter = dataset_to_hdf5.TrafficSignConverter(
                                         cfg.dataset,
+                                        root,
                                         converter_args.get('data_root'),
                                         converter_args.get('splits_root'),
                                         converter_args.get('records_root'),
@@ -130,6 +138,7 @@ def main():
         elif cfg.dataset == 'mscoco':
             converter = dataset_to_hdf5.MSCOCOConverter(
                                         cfg.dataset,
+                                        root,
                                         converter_args.get('data_root'),
                                         converter_args.get('splits_root'),
                                         converter_args.get('records_root'),
@@ -137,6 +146,7 @@ def main():
         elif cfg.dataset == 'mini_imagenet':
             converter =  dataset_to_hdf5.MiniImageNetConverter(
                                         cfg.dataset,
+                                        root,
                                         converter_args.get('data_root'),
                                         converter_args.get('splits_root'),
                                         converter_args.get('records_root'),
@@ -144,6 +154,7 @@ def main():
         elif cfg.dataset == 'ilsvrc_2012':
             converter = dataset_to_hdf5.ImageNetConverter(
                                         cfg.dataset,
+                                        root,
                                         converter_args.get('data_root'),
                                         converter_args.get('splits_root'),
                                         converter_args.get('records_root'),
@@ -151,6 +162,7 @@ def main():
         elif cfg.dataset == 'ilsvrc_2012_v2':
             converter = dataset_to_hdf5.ImageNetConverterV2(
                                         cfg.dataset,
+                                        root,
                                         converter_args.get('data_root'),
                                         converter_args.get('splits_root'),
                                         converter_args.get('records_root'),
@@ -170,7 +182,3 @@ def main():
                 'Creating %s specification and records',
                 cfg.dataset)
             converter.convert_dataset()
-
-
-if __name__ == '__main__':
-    main()

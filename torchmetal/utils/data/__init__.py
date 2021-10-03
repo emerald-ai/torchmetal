@@ -3,12 +3,14 @@ from torchmetal.utils.data.dataloader import (BatchMetaDataLoader,
 from torchmetal.utils.data.dataset import (ClassDataset,
                                            CombinationMetaDataset, MetaDataset)
 from torchmetal.utils.data.sampler import (CombinationRandomSampler,
-                                           CombinationSequentialSampler)
+                                           CombinationSequentialSampler,
+                                           MetaDataSampler)
 from torchmetal.utils.data.task import ConcatTask, Dataset, SubsetTask, Task
 from torchmetal.utils.data.wrappers import NonEpisodicWrapper
 
 __all__ = [
     "MetaDataLoader",
+    "MetaDataSampler",
     "BatchMetaDataLoader",
     "ClassDataset",
     "MetaDataset",

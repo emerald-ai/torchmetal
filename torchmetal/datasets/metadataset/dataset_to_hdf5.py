@@ -308,6 +308,7 @@ class DatasetConverter(object):
 
   def __init__(self,
                name,
+               root,
                data_root,
                splits_root,
                records_root,
@@ -336,9 +337,9 @@ class DatasetConverter(object):
         reproducible way.
     """
     self.name = name
-    self.data_root = os.path.join(os.path.dirname(__file__), self.name, data_root)
-    self.splits_root = os.path.join(os.path.dirname(__file__), self.name, splits_root)
-    self.records_root = os.path.join(os.path.dirname(__file__), self.name, records_root)
+    self.data_root = str(root / data_root)
+    self.splits_root = str(root / splits_root)
+    self.records_root = str(root / records_root)
     self.records_path = self.records_root
     self.has_superclasses = has_superclasses
     self.seed = random_seed
@@ -351,10 +352,12 @@ class DatasetConverter(object):
 
     self.split_file = split_file
     if self.split_file is None:
+      stored_split = Path(__file__).resolve().parent / f"splits/{self.name}_splits.json"
       self.splits_root = os.path.join(self.name, self.splits_root)
       self.split_file = os.path.join(self.splits_root,
                                      '{}_splits.json'.format(self.name))
       Path.mkdir(Path(self.splits_root), parents=True, exist_ok=True)
+      shutil.copy(stored_split, self.split_file)
 
     elif self.split_file == "default":
         self.splits_root = os.path.join(self.name, self.splits_root)
