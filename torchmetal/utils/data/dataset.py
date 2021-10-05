@@ -4,6 +4,7 @@ from copy import deepcopy
 from itertools import combinations
 
 import numpy as np
+from functools import partial
 from ordered_set import OrderedSet
 from torchvision.transforms import Compose
 
@@ -359,7 +360,7 @@ class CombinationMetaDataset(MetaDataset):
                 len(datasets),
                 target_transform=wrap_transform(
                     self.target_transform,
-                    self._copy_categorical,
+                    partial(self._copy_categorical,num_classes=len(datasets)),
                     transform_type=Categorical,
                 ),
             )
@@ -370,11 +371,14 @@ class CombinationMetaDataset(MetaDataset):
 
         return task
 
-    def _copy_categorical(self, transform):
+    def _copy_categorical(self, transform, num_classes=None):
         assert isinstance(transform, Categorical)
         transform.reset()
-        if transform.num_classes is None:
-            transform.num_classes = self.num_classes_per_task
+        if not self.meta_dataset:
+            if transform.num_classes is None:
+                transform.num_classes = self.num_classes_per_task
+        else:
+            transform.num_classes = num_classes
         return deepcopy(transform)
 
     def __len__(self):
