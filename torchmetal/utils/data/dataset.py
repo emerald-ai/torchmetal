@@ -287,11 +287,6 @@ class CombinationMetaDataset(MetaDataset):
         target_transform=None,
         dataset_transform=None,
     ):
-        if not isinstance(num_classes_per_task, int):
-            raise TypeError(
-                "Unknown type for `num_classes_per_task`. Expected "
-                "`int`, got `{0}`.".format(type(num_classes_per_task))
-            )
         self.dataset = dataset
         self.num_classes_per_task = num_classes_per_task
         # If no target_transform, then use a default target transform that
@@ -383,8 +378,12 @@ class CombinationMetaDataset(MetaDataset):
 
     def __len__(self):
         num_classes, length = len(self.dataset), 1
-        for i in range(1, self.num_classes_per_task + 1):
-            length *= (num_classes - i + 1) / i
+        if not self.meta_dataset:
+            for i in range(1, self.num_classes_per_task + 1):
+                length *= (num_classes - i + 1) / i
+        else:
+            for i in range(1, 50 + 1):
+                length *= (num_classes - i + 1) / i
 
         if length > sys.maxsize:
             warnings.warn(

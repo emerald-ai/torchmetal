@@ -23,6 +23,7 @@ maintainers = ["Derek Goddeau <derek.j.goddeau@pm.me>"]
 [tool.poetry.dependencies]
 python = "^3.6.2"
 academictorrents = {version = "==2.1.*,>=2.1.0", optional = true}
+gsutil = "*"
 h5py = "*"
 numpy = ">=1.14.0"
 ordered-set = "*"

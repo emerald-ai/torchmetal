@@ -69,6 +69,9 @@ class Splitter(object):
 
     def __call__(self, task):
         indices = self.get_indices(task)
+
+
+
         return OrderedDict(
             [(split, SubsetTask(task, indices[split])) for split in self.splits]
         )
@@ -99,6 +102,10 @@ class ClassSplitter_(Splitter):
         ----------
         shuffle : bool (default: `True`)
             Shuffle the data in the dataset before the split.
+
+        variable_class_split: tuple, optional
+            if passed splits the classes into train, test individually
+            based on information in the tuple.
 
         num_samples_per_class : dict, optional
             Dictionary containing the names of the splits (as keys) and the
@@ -214,7 +221,7 @@ class ClassSplitter_(Splitter):
         if self.variable_class_split:
             for dataset in task.datasets:
                 index = dataset.index
-                for split in self.splits:
+                for split in self.splits:  # each split being a class to be split
                     if split[0] == index:
                         this_split = {'train': split[1],
                                       'test': split[2]
@@ -225,14 +232,6 @@ class ClassSplitter_(Splitter):
                         "of {splits}"
                     )
                 num_samples = len(dataset)
-               # if num_samples < self._min_samples_per_class:
-               #     raise ValueError(
-               #         "The number of samples for one class ({0}) "
-               #         "is smaller than the minimum number of samples per class "
-               #         "required by `ClassSplitter` ({1}).".format(
-               #             num_samples, self._min_samples_per_class
-               #         )
-               #     )
 
                 if self.shuffle:
                     seed = (hash(task) + hash(dataset) + self.random_state_seed) % (2 ** 32)

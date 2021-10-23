@@ -96,7 +96,7 @@ def convert(root, dataset=None):
                                         converter_args.get('records_root'),
                                                         )
         elif cfg.dataset == 'dtd':
-            converter = dataset_to_hdf5.DTDconverter(
+            converter = dataset_to_hdf5.DTDConverter(
                                         cfg.dataset,
                                         root,
                                         converter_args.get('data_root'),

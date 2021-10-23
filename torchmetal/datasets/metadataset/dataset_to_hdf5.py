@@ -22,7 +22,6 @@ from torchmetal.datasets.metadataset.data import imagenet_specification
 from torchmetal.datasets.metadataset.data import learning_spec
 
 
-# TODO: integrate into hydra
 DEFAULT_FILE_PATTERN = '{}.h5'
 TRAIN_TEST_FILE_PATTERN = '{}_{}.h5'
 AUX_DATA_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -75,7 +74,8 @@ def write_from_npy_single_channel(class_npy_file, class_label,
         buf = io.BytesIO()
         img.save(buf, format='JPEG')
         buf.seek(0)
-        collection.append(buf.getvalue)
+        img = buf.getvalue()
+        collection.append(img)
 
     write_to_single_label_dataset(collection, class_label, writer)
 
@@ -168,6 +168,12 @@ def write_from_image_files(class_files,
             buf.seek(0)
             image_bytes = buf.getvalue()
             return image_bytes
+
+        buf = io.BytesIO()
+        img.save(buf, format=output_format)
+        buf.seek(0)
+        image_bytes = buf.getvalue()
+        return image_bytes
 
     collection = []
     collected_images_count = 0

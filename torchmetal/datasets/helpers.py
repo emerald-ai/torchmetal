@@ -4,12 +4,17 @@ from torchvision.transforms import CenterCrop, Compose, Resize, ToTensor
 
 from torchmetal.datasets import (CIFARFS, CUB, FC100, DoubleMNIST,
                                  MiniImagenet, Omniglot, Pascal5i,
-                                 TieredImagenet, TripleMNIST)
+                                 TieredImagenet, TripleMNIST, Quickdraw,
+                                 Aircraft, CuBirds, Dtd, VggFlower,
+                                 TrafficSigns, Mscoco, Fungi, Ilsvrc2012)
 from torchmetal.transforms import (Categorical, ClassSplitter, Rotation,
                                    SegmentationPairTransform)
 
 __all__ = [
     "omniglot",
+    "quickdraw",
+    "aircraft",
+    "cubirds",
     "miniimagenet",
     "tieredimagenet",
     "cifar_fs",
@@ -17,14 +22,21 @@ __all__ = [
     "cub",
     "doublemnist",
     "triplemnist",
+    "dtd",
+    "vggflower",
+    "trafficsigns",
+    "mscoco",
+    "fungi",
+    "ilsvrc2012",
 ]
 
 
 def helper_with_default(
     klass,
     folder,
-    shots,
-    ways,
+    shots=None,
+    ways=None,
+    meta_dataset=None,
     shuffle=True,
     test_shots=None,
     seed=None,
@@ -41,25 +53,37 @@ def helper_with_default(
         ways = kwargs["num_classes_per_task"]
     if "transform" not in kwargs:
         kwargs["transform"] = defaults.get("transform", ToTensor())
-    if "target_transform" not in kwargs:
+    if "target_transform" not in kwargs and not meta_dataset:
         kwargs["target_transform"] = defaults.get("target_transform", Categorical(ways))
+    elif "target_transform" not in kwargs and meta_dataset:
+        kwargs["target_transform"] = defaults.get("target_transform", Categorical())
     if "class_augmentations" not in kwargs:
         kwargs["class_augmentations"] = defaults.get("class_augmentations", None)
     if test_shots is None:
         test_shots = shots
-    dataset = klass(folder, num_classes_per_task=ways, **kwargs)
-    dataset = ClassSplitter(
-        dataset,
-        shuffle=shuffle,
-        num_train_per_class=shots,
-        num_test_per_class=test_shots,
-    )
-    dataset.seed(seed)
+
+    if not meta_dataset:
+        dataset = klass(folder, num_classes_per_task=ways, **kwargs)
+        dataset = ClassSplitter(
+            dataset,
+            shuffle=shuffle,
+            num_train_per_class=shots,
+            num_test_per_class=test_shots,
+        )
+        dataset.seed(seed)
+    else:
+        dataset = klass(folder, meta_dataset=meta_dataset, **kwargs)
+        dataset = ClassSplitter(
+            dataset,
+            shuffle=shuffle,
+            variable_class_split=True,
+        )
+        dataset.seed(seed)
 
     return dataset
 
 
-def omniglot(folder, shots, ways, shuffle=True, test_shots=None, seed=None, **kwargs):
+def omniglot(folder, shots=None, ways=None, shuffle=True, test_shots=None, seed=None, **kwargs):
     """Helper function to create a meta-dataset for the Omniglot dataset.
 
     Parameters
@@ -100,6 +124,474 @@ def omniglot(folder, shots, ways, shuffle=True, test_shots=None, seed=None, **kw
 
     return helper_with_default(
         Omniglot,
+        folder,
+        shots,
+        ways,
+        shuffle=shuffle,
+        test_shots=test_shots,
+        seed=seed,
+        defaults=defaults,
+        **kwargs
+    )
+
+
+def quickdraw(folder, shots=None, ways=None, shuffle=True, test_shots=None, seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the Omniglot dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `omniglot` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way`
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `Omniglot` class.
+
+    See also
+    --------
+    `datasets.Omniglot` : Meta-dataset for the Omniglot dataset.
+    """
+    defaults = {
+        "transform": Compose([Resize((28, 28)), ToTensor()]),
+        "class_augmentations": [Rotation([90, 180, 270])],
+    }
+
+    return helper_with_default(
+        Quickdraw,
+        folder,
+        shots,
+        ways,
+        shuffle=shuffle,
+        test_shots=test_shots,
+        seed=seed,
+        defaults=defaults,
+        **kwargs
+    )
+
+
+def aircraft(folder, shots=None, ways=None, shuffle=True, test_shots=None, seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the Omniglot dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `omniglot` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way`
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `Omniglot` class.
+
+    See also
+    --------
+    `datasets.Omniglot` : Meta-dataset for the Omniglot dataset.
+    """
+    defaults = {
+        "transform": Compose([Resize((28, 28)), ToTensor()]),
+        "class_augmentations": [Rotation([90, 180, 270])],
+    }
+
+    return helper_with_default(
+        Aircraft,
+        folder,
+        shots,
+        ways,
+        shuffle=shuffle,
+        test_shots=test_shots,
+        seed=seed,
+        defaults=defaults,
+        **kwargs
+    )
+
+
+def cubirds(folder, shots=None, ways=None, shuffle=True, test_shots=None, seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the Omniglot dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `omniglot` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way`
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `Omniglot` class.
+
+    See also
+    --------
+    `datasets.Omniglot` : Meta-dataset for the Omniglot dataset.
+    """
+    defaults = {
+        "transform": Compose([Resize((28, 28)), ToTensor()]),
+        "class_augmentations": [Rotation([90, 180, 270])],
+    }
+
+    return helper_with_default(
+        CuBirds,
+        folder,
+        shots,
+        ways,
+        shuffle=shuffle,
+        test_shots=test_shots,
+        seed=seed,
+        defaults=defaults,
+        **kwargs
+    )
+
+
+def dtd(folder, shots=None, ways=None, shuffle=True, test_shots=None, seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the Omniglot dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `omniglot` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way`
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `Omniglot` class.
+
+    See also
+    --------
+    `datasets.Omniglot` : Meta-dataset for the Omniglot dataset.
+    """
+    defaults = {
+        "transform": Compose([Resize((28, 28)), ToTensor()]),
+        "class_augmentations": [Rotation([90, 180, 270])],
+    }
+
+    return helper_with_default(
+        Dtd,
+        folder,
+        shots,
+        ways,
+        shuffle=shuffle,
+        test_shots=test_shots,
+        seed=seed,
+        defaults=defaults,
+        **kwargs
+    )
+
+
+def vggflower(folder, shots=None, ways=None, shuffle=True, test_shots=None, seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the Omniglot dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `omniglot` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way`
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `Omniglot` class.
+
+    See also
+    --------
+    `datasets.Omniglot` : Meta-dataset for the Omniglot dataset.
+    """
+    defaults = {
+        "transform": Compose([Resize((28, 28)), ToTensor()]),
+        "class_augmentations": [Rotation([90, 180, 270])],
+    }
+
+    return helper_with_default(
+        VggFlower,
+        folder,
+        shots,
+        ways,
+        shuffle=shuffle,
+        test_shots=test_shots,
+        seed=seed,
+        defaults=defaults,
+        **kwargs
+    )
+
+
+def trafficsigns(folder, shots=None, ways=None, shuffle=True, test_shots=None, seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the Omniglot dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `omniglot` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way`
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `Omniglot` class.
+
+    See also
+    --------
+    `datasets.Omniglot` : Meta-dataset for the Omniglot dataset.
+    """
+    defaults = {
+        "transform": Compose([Resize((28, 28)), ToTensor()]),
+        "class_augmentations": [Rotation([90, 180, 270])],
+    }
+
+    return helper_with_default(
+        VggFlower,
+        folder,
+        shots,
+        ways,
+        shuffle=shuffle,
+        test_shots=test_shots,
+        seed=seed,
+        defaults=defaults,
+        **kwargs
+    )
+
+
+def fungi(folder, shots=None, ways=None, shuffle=True, test_shots=None, seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the Omniglot dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `omniglot` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way`
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `Omniglot` class.
+
+    See also
+    --------
+    `datasets.Omniglot` : Meta-dataset for the Omniglot dataset.
+    """
+    defaults = {
+        "transform": Compose([Resize((28, 28)), ToTensor()]),
+        "class_augmentations": [Rotation([90, 180, 270])],
+    }
+
+    return helper_with_default(
+        VggFlower,
+        folder,
+        shots,
+        ways,
+        shuffle=shuffle,
+        test_shots=test_shots,
+        seed=seed,
+        defaults=defaults,
+        **kwargs
+    )
+
+
+def mscoco(folder, shots=None, ways=None, shuffle=True, test_shots=None, seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the Omniglot dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `omniglot` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way`
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `Omniglot` class.
+
+    See also
+    --------
+    `datasets.Omniglot` : Meta-dataset for the Omniglot dataset.
+    """
+    defaults = {
+        "transform": Compose([Resize((28, 28)), ToTensor()]),
+        "class_augmentations": [Rotation([90, 180, 270])],
+    }
+
+    return helper_with_default(
+        VggFlower,
+        folder,
+        shots,
+        ways,
+        shuffle=shuffle,
+        test_shots=test_shots,
+        seed=seed,
+        defaults=defaults,
+        **kwargs
+    )
+
+
+def ilsvrc2012(folder, shots=None, ways=None, shuffle=True, test_shots=None, seed=None, **kwargs):
+    """Helper function to create a meta-dataset for the Omniglot dataset.
+
+    Parameters
+    ----------
+    folder : string
+        Root directory where the dataset folder `omniglot` exists.
+
+    shots : int
+        Number of (training) examples per class in each task. This corresponds
+        to `k` in `k-shot` classification.
+
+    ways : int
+        Number of classes per task. This corresponds to `N` in `N-way`
+        classification.
+
+    shuffle : bool (default: `True`)
+        Shuffle the examples when creating the tasks.
+
+    test_shots : int, optional
+        Number of test examples per class in each task. If `None`, then the
+        number of test examples is equal to the number of training examples per
+        class.
+
+    seed : int, optional
+        Random seed to be used in the meta-dataset.
+
+    kwargs
+        Additional arguments passed to the `Omniglot` class.
+
+    See also
+    --------
+    `datasets.Omniglot` : Meta-dataset for the Omniglot dataset.
+    """
+    defaults = {
+        "transform": Compose([Resize((28, 28)), ToTensor()]),
+        "class_augmentations": [Rotation([90, 180, 270])],
+    }
+
+    return helper_with_default(
+        VggFlower,
         folder,
         shots,
         ways,
