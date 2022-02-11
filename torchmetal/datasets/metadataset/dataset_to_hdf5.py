@@ -1324,10 +1324,21 @@ class ImageNetConverter(DatasetConverter):
   used during training.
   """
   def __init__(self,
-               ilsvrc_2012_num_leaf_images_path
+               ilsvrc_2012_num_leaf_images_path,
+               name,
+               root,
+               data_root,
+               splits_root,
+               records_root
                ):
     self.ilsvrc_2012_num_leaf_images_path = ilsvrc_2012_num_leaf_images_path
-    super().__init__()
+    super().__init__(
+               name,
+               root,
+               data_root,
+               splits_root,
+               records_root
+    )
 
 
   def _create_data_spec(self, train_split_only=False):
@@ -1399,7 +1410,7 @@ class ImageNetConverter(DatasetConverter):
     # (e.g. n15075141) and containing all images of that synset.
     set_of_directories = set(
         entry for entry in os.listdir(self.data_root)
-        if os.isdir(os.path.join(self.data_root, entry)))
+        if os.path.isdir(os.path.join(self.data_root, entry)))
     assert set_of_directories == set(all_synset_ids), (
         'self.data_root should contain a directory whose name is the WordNet '
         "id of each synset that is a leaf of any split's subgraph.")

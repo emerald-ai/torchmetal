@@ -53,7 +53,7 @@ data_set:
     <<: *converter_args
   ilsvrc_2012:
     name:
-      'ilsvrc_2012'
+      'ilsvrc2012'
     <<: *converter_args
   ilsvrc_2012_v2:
     name:
@@ -64,11 +64,11 @@ data_set:
 mini_imagenet_records_dir:
   ''
 ilsvrc_2012_num_leaf_images_path:
-  'ilsvrc_2012/num_leaf_images.json'
+  'data/ilsvrc2012/num_leaf_images.json'
 path_to_is_a:
-  'wordnet.is_a.txt'
+  'data/ilsvrc2012/wordnet.is_a.txt'
 path_to_words:
-  'words.txt'
+  'data/ilsvrc2012/words.txt'
 
 dataset:
   'omniglot'

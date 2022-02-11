@@ -60,6 +60,7 @@ import h5py as h5
 def convert(root, dataset=None):
 
     cfg = OmegaConf.load(pathlib.Path(__file__).parent.resolve() / 'config/config.yaml')
+    converter_args = None
     if dataset is not None:
         cfg.dataset = dataset
     for item, value in cfg.data_set.items():
@@ -151,8 +152,9 @@ def convert(root, dataset=None):
                                         converter_args.get('splits_root'),
                                         converter_args.get('records_root'),
                                                               )
-        elif cfg.dataset == 'ilsvrc_2012':
+        elif cfg.dataset == 'ilsvrc2012':
             converter = dataset_to_hdf5.ImageNetConverter(
+                                        cfg.ilsvrc_2012_num_leaf_images_path,
                                         cfg.dataset,
                                         root,
                                         converter_args.get('data_root'),

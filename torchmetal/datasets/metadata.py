@@ -1,10 +1,10 @@
 import torch
 from torch.utils.data import Dataset
 
-from torchmetal.datasets.helpers import (omniglot, quickdraw, aircraft,
-                                         cubirds, dtd, vggflower,
-                                         trafficsigns, fungi, mscoco,
-                                         ilsvrc2012)
+from torchmetal.datasets import (Omniglot, Quickdraw, Aircraft,
+                                         CuBirds, Dtd, VggFlower,
+                                         TrafficSigns, Fungi, Mscoco,
+                                         Ilsvrc2012)
 
 
 class MetaDataset(Dataset):
@@ -64,62 +64,62 @@ class MetaDataset(Dataset):
         self.meta_dataset = True
 
         self.datasets = [
-            omniglot(
+            Omniglot(
                 "data",
                 use_vinyals_split=False,
                 meta_dataset=True,
                 meta_train=True,
                 download=True,
             ),
-            quickdraw(
+            Quickdraw(
                 "data",
                 meta_dataset=True,
                 meta_train=True,
                 download=True,
             ),
-            aircraft(
+            Aircraft(
                 "data",
                 meta_dataset=True,
                 meta_train=True,
                 download=True,
             ),
-            cubirds(
+            CuBirds(
                 "data",
                 meta_dataset=True,
                 meta_train=True,
                 download=True,
             ),
-            dtd(
+            Dtd(
                 "data",
                 meta_dataset=True,
                 meta_train=True,
                 download=True,
             ),
-            vggflower(
+            VggFlower(
                 "data",
                 meta_dataset=True,
                 meta_train=True,
                 download=True,
             ),
-            trafficsigns(
+            TrafficSigns(
                 "data",
                 meta_dataset=True,
                 meta_train=True,
                 download=True,
             ),
-            fungi(
+            Fungi(
                 "data",
                 meta_dataset=True,
                 meta_train=True,
                 download=True,
             ),
-            mscoco(
+            Mscoco(
                 "data",
                 meta_dataset=True,
                 meta_train=True,
                 download=True,
             ),
-            ilsvrc2012(
+            Ilsvrc2012(
                 "data",
                 meta_dataset=True,
                 meta_train=True,

@@ -724,6 +724,7 @@ def get_num_synset_2012_images(path, synsets_2012, files_to_skip=None):
     a dict mapping the WordNet id of each ILSVRC 2012 class to its number of
     images.
   """
+  cfg = compose(config_name="config")
   if path:
     logging.info('Attempting to read number of leaf images from %s...', path)
     if os.path.isfile(path):
@@ -737,7 +738,7 @@ def get_num_synset_2012_images(path, synsets_2012, files_to_skip=None):
     files_to_skip = set()
   num_synset_2012_images = {}
   for s_2012 in synsets_2012:
-    synset_dir = os.path.join(FLAGS.ilsvrc_2012_data_root, s_2012.wn_id)
+    synset_dir = os.path.join("data/ilsvrc2012/data/", s_2012.wn_id)
     all_files = set(os.listdir(synset_dir))
     img_files = set([f for f in all_files if f.lower().endswith('jpeg')])
     final_files = img_files - files_to_skip
@@ -872,7 +873,7 @@ def create_imagenet_specification(split_enum,
   initialize(config_path="../config", job_name="imagenet_specs")
   cfg = compose(config_name="config")
   # Create Synsets for all ImageNet synsets (82115 in total).
-  data_root = cfg.dataset.ilsvrc_2012.data_root
+  data_root = (cfg.data_set.ilsvrc_2012.data_root + "/ilsvrc2012/data")
   synsets = {}
   path_to_words = cfg.path_to_words
   if not path_to_words:
