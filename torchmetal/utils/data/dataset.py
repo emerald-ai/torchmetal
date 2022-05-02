@@ -4,6 +4,7 @@ from copy import deepcopy
 from itertools import combinations
 
 import numpy as np
+from functools import partial
 from ordered_set import OrderedSet
 from torchvision.transforms import Compose
 
@@ -47,18 +48,20 @@ class ClassDataset(object):
 
     def __init__(
         self,
+        meta_dataset=False,
         meta_train=False,
         meta_val=False,
         meta_test=False,
         meta_split=None,
         class_augmentations=None,
     ):
-        if meta_train + meta_val + meta_test == 0:
+        if meta_train + meta_val + meta_test + meta_dataset == 0:
             if meta_split is None:
                 raise ValueError(
                     "The meta-split is undefined. Use either the "
                     "argument `meta_train=True` (or `meta_val`/`meta_test`), or "
-                    'the argument `meta_split="train"` (or "val"/"test").'
+                    'the argument `meta_split="train"` (or "val"/"test"), or '
+                    "use the meta_dataset argument on applicable datasets"
                 )
             elif meta_split not in ["train", "val", "test"]:
                 raise ValueError(
@@ -77,6 +80,7 @@ class ClassDataset(object):
         self.meta_train = meta_train
         self.meta_val = meta_val
         self.meta_test = meta_test
+        self.meta_dataset = meta_dataset
         self._meta_split = meta_split
 
         if class_augmentations is not None:
@@ -130,6 +134,8 @@ class ClassDataset(object):
                 self._meta_split = "val"
             elif self.meta_test:
                 self._meta_split = "test"
+            elif self.meta_dataset:
+                self._meta_split = "meta"
             else:
                 raise NotImplementedError()
         return self._meta_split
@@ -180,6 +186,7 @@ class MetaDataset(object):
 
     def __init__(
         self,
+        meta_dataset=False,
         meta_train=False,
         meta_val=False,
         meta_test=False,
@@ -194,7 +201,7 @@ class MetaDataset(object):
                     "argument `meta_train=True` (or `meta_val`/`meta_test`), or "
                     'the argument `meta_split="train"` (or "val"/"test").'
                 )
-            elif meta_split not in ["train", "val", "test"]:
+            elif meta_split not in ["train", "val", "test", "meta"]:
                 raise ValueError(
                     "Unknown meta-split name `{0}`. The meta-split "
                     "must be in [`train`, `val`, `test`].".format(meta_split)
@@ -211,6 +218,7 @@ class MetaDataset(object):
         self.meta_train = meta_train
         self.meta_val = meta_val
         self.meta_test = meta_test
+        self.meta_dataset = meta_dataset
         self._meta_split = meta_split
         self.target_transform = target_transform
         self.dataset_transform = dataset_transform
@@ -279,11 +287,6 @@ class CombinationMetaDataset(MetaDataset):
         target_transform=None,
         dataset_transform=None,
     ):
-        if not isinstance(num_classes_per_task, int):
-            raise TypeError(
-                "Unknown type for `num_classes_per_task`. Expected "
-                "`int`, got `{0}`.".format(type(num_classes_per_task))
-            )
         self.dataset = dataset
         self.num_classes_per_task = num_classes_per_task
         # If no target_transform, then use a default target transform that
@@ -296,6 +299,7 @@ class CombinationMetaDataset(MetaDataset):
             meta_train=dataset.meta_train,
             meta_val=dataset.meta_val,
             meta_test=dataset.meta_test,
+            meta_dataset=dataset.meta_dataset,
             meta_split=dataset.meta_split,
             target_transform=target_transform,
             dataset_transform=dataset_transform,
@@ -324,36 +328,62 @@ class CombinationMetaDataset(MetaDataset):
                     index,
                 )
             )
-        assert len(index) == self.num_classes_per_task
-        datasets = [self.dataset[i] for i in index]
-        # Use deepcopy on `Categorical` target transforms, to avoid any side
-        # effect across tasks.
-        task = ConcatTask(
-            datasets,
-            self.num_classes_per_task,
-            target_transform=wrap_transform(
-                self.target_transform,
-                self._copy_categorical,
-                transform_type=Categorical,
-            ),
-        )
 
-        if self.dataset_transform is not None:
-            task = self.dataset_transform(task)
+        if not self.meta_dataset:
+            assert len(index) == self.num_classes_per_task
+            datasets = [self.dataset[i] for i in index]
+            # Use deepcopy on `Categorical` target transforms, to avoid any side
+            # effect across tasks.
+            task = ConcatTask(
+                datasets,
+                self.num_classes_per_task,
+                target_transform=wrap_transform(
+                    self.target_transform,
+                    self._copy_categorical,
+                    transform_type=Categorical,
+                ),
+            )
+            if self.dataset_transform is not None:
+                task = self.dataset_transform(task)
+
+        else:
+            datasets = [self.dataset[i[0]] for i in index]
+            # Use deepcopy on `Categorical` target transforms, to avoid any side
+            # effect across tasks.
+            task = ConcatTask(
+                datasets,
+                len(datasets),
+                target_transform=wrap_transform(
+                    self.target_transform,
+                    partial(self._copy_categorical,num_classes=len(datasets)),
+                    transform_type=Categorical,
+                ),
+            )
+            if self.dataset_transform is not None:
+                self.dataset_transform.set_num_train_test(
+                    variable_class_split=index)
+                task = self.dataset_transform(task)
 
         return task
 
-    def _copy_categorical(self, transform):
+    def _copy_categorical(self, transform, num_classes=None):
         assert isinstance(transform, Categorical)
         transform.reset()
-        if transform.num_classes is None:
-            transform.num_classes = self.num_classes_per_task
+        if not self.meta_dataset:
+            if transform.num_classes is None:
+                transform.num_classes = self.num_classes_per_task
+        else:
+            transform.num_classes = num_classes
         return deepcopy(transform)
 
     def __len__(self):
         num_classes, length = len(self.dataset), 1
-        for i in range(1, self.num_classes_per_task + 1):
-            length *= (num_classes - i + 1) / i
+        if not self.meta_dataset:
+            for i in range(1, self.num_classes_per_task + 1):
+                length *= (num_classes - i + 1) / i
+        else:
+            for i in range(1, 50 + 1):
+                length *= (num_classes - i + 1) / i
 
         if length > sys.maxsize:
             warnings.warn(

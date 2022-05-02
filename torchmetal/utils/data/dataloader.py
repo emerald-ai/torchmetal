@@ -1,5 +1,6 @@
 from collections import OrderedDict
 
+import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset as TorchDataset
@@ -19,13 +20,45 @@ class BatchMetaCollate(object):
             return self.collate_fn([task[idx] for idx in range(len(task))])
         elif isinstance(task, OrderedDict):
             return OrderedDict(
-                [(key, self.collate_task(subtask)) for (key, subtask) in task.items()]
-            )
+                [(key, self.collate_task(subtask)) for (
+                    key, subtask) in task.items()])
         else:
             raise NotImplementedError()
 
     def __call__(self, batch):
-        return self.collate_fn([self.collate_task(task) for task in batch])
+        return self.collate_fn(([self.collate_task(task) for task in batch]))
+
+
+class BatchMetaCollatePad(object):
+    def __init__(self, collate_fn):
+        super().__init__()
+        self.collate_fn = collate_fn
+
+    def collate_task(self, task):
+        if isinstance(task, TorchDataset):
+            return self.collate_fn([task[idx] for idx in range(len(task))])
+        elif isinstance(task, OrderedDict):
+            return OrderedDict(
+                [(key, self.collate_task(subtask)) for (
+                    key, subtask) in task.items()])
+        else:
+            raise NotImplementedError()
+
+    def __call__(self, batch):
+        collated = ([self.collate_task(task) for task in batch])
+        for pair in collated:
+            for split in pair:
+                shape = pair[split][0].shape
+                pair[split][0] = torch.cat([pair[split][0], torch.zeros(
+                   (500 - shape[0]),  # pad images
+                   shape[1],
+                   shape[2],
+                   shape[3])])
+
+                shape = pair[split][1].shape
+                pair[split][1] = torch.cat([pair[split][1], torch.zeros(
+                    500 - shape[0])])  # pad labels
+        return self.collate_fn(collated)
 
 
 def no_collate(batch):
@@ -85,7 +118,10 @@ class BatchMetaDataLoader(MetaDataLoader):
         timeout=0,
         worker_init_fn=None,
     ):
-        collate_fn = BatchMetaCollate(default_collate)
+        if dataset.meta_dataset:
+            collate_fn = BatchMetaCollatePad(default_collate)
+        else:
+            collate_fn = BatchMetaCollate(default_collate)
 
         super(BatchMetaDataLoader, self).__init__(
             dataset,

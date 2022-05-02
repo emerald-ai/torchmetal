@@ -23,16 +23,20 @@ maintainers = ["Derek Goddeau <derek.j.goddeau@pm.me>"]
 [tool.poetry.dependencies]
 python = "^3.6.2"
 academictorrents = {version = "==2.1.*,>=2.1.0", optional = true}
+gsutil = "*"
 h5py = "*"
 numpy = ">=1.14.0"
 ordered-set = "*"
 pandas = {version = "==0.24.*,>=0.24.0", optional = true}
 pillow = ">=7.0.0"
 requests = "*"
-six = {version = "==1.11.*,>=1.11.0", optional = true}
+six = {version = "==1.11.*,>=1.11.0", optional = false}
 torch = "<1.9.0,>=1.4.0"
 torchvision = "<0.10.0,>=0.5.0"
 tqdm = ">=4.0.0"
+omegaconf = "^2.1.0"
+hydra-core = "^1.1"
+scipy = "*"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
